@@ -105,14 +105,6 @@
         )
     )
 
-    (allow isid dev.null.isid
-        (service
-            (
-                all
-            )
-        )
-    )
-
     (allow isid files.generic_config.config_file
         (service
             (
@@ -137,6 +129,11 @@
         )
     )
 
+    (call dev.null.control_client_subj_type
+        (
+            isid
+        )
+    )
     (call dev.unconfined_subj_type
         (
             isid
@@ -206,6 +203,11 @@
     )
 
     (optional sys_optional_miscfiles
+        (call misc.fstab.control_client_subj_type
+            (
+                isid
+            )
+        )
         (call misc.fstab.generic_config_obj_type_transition
             (
                 isid

@@ -2330,8 +2330,8 @@
             )
         )
 
-        (macro status_client_subj_type ((type ARG1))
-            (typeattributeset status_client_subj_type_attribute ARG1)
+        (macro control_client_subj_type ((type ARG1))
+            (typeattributeset control_client_subj_type_attribute ARG1)
         )
 
         ;
@@ -2340,13 +2340,13 @@
 
         (blockinherit files.config_file.obj_template)
 
-        (typeattribute status_client_subj_type_attribute)
+        (typeattribute control_client_subj_type_attribute)
 
         (optional miscfiles_fstab_optional_systemd
-            (allow status_client_subj_type_attribute config_file
+            (allow control_client_subj_type_attribute config_file
                 (service
                     (
-                        status
+                        all
                     )
                 )
             )
