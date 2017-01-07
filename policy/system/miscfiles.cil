@@ -62,7 +62,6 @@
     (typeattribute not_write_shadow_subj_type_attribute)
     (typeattribute write_shadow_subj_type_attribute)
 
-
     (typeattributeset not_read_shadow_subj_type_attribute
         (not
             (
