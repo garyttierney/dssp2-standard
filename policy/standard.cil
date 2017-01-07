@@ -206,12 +206,12 @@
     )
 
     (optional sys_optional_miscfiles
-        (call misc.fstab.generic_config.obj_type_transition
+        (call misc.fstab.generic_config_obj_type_transition
             (
                 isid
             )
         )
-        (call misc.hosts.generic_config.obj_type_transition
+        (call misc.hosts.generic_config_obj_type_transition
             (
                 isid
             )
@@ -226,7 +226,7 @@
                 isid
             )
         )
-        (call misc.utmp.generic_runtime.obj_type_transition
+        (call misc.utmp.generic_runtime_obj_type_transition
             (
                 isid
             )
