@@ -52,7 +52,8 @@ BASE_POLICY_SOURCES = policy/base/access_vectors.cil \
 	policy/base/terminals.cil
 
 STANDARD_POLICY_SOURCES = policy/standard.cil \
-	policy/system/miscfiles.cil
+	policy/system/miscfiles.cil \
+	policy/system/users.cil
 
 all: clean policy.$(POLICY_VERSION)
 
