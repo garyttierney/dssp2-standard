@@ -786,7 +786,7 @@
 
             (macro add_entries ((type ARG1))
                 (allow ARG1 cert_file add_entry_dir_perms)
-                (call files.generic_cert.search
+                (call misc.generic_cert.search
                     (
                         ARG1
                     )
@@ -795,7 +795,7 @@
 
             (macro append_files ((type ARG1))
                 (allow ARG1 cert_file append_file_perms)
-                (call files.generic_cert.search
+                (call misc.generic_cert.search
                     (
                         ARG1
                     )
@@ -822,7 +822,7 @@
 
             (macro create_dirs ((type ARG1))
                 (allow ARG1 cert_file create_dir_perms)
-                (call files.generic_cert.search
+                (call misc.generic_cert.search
                     (
                         ARG1
                     )
@@ -831,7 +831,7 @@
 
             (macro create_files ((type ARG1))
                 (allow ARG1 cert_file create_file_perms)
-                (call files.generic_cert.search
+                (call misc.generic_cert.search
                     (
                         ARG1
                     )
@@ -840,7 +840,7 @@
 
             (macro create_lnk_files ((type ARG1))
                 (allow ARG1 cert_file create_lnk_file_perms)
-                (call files.generic_cert.search
+                (call misc.generic_cert.search
                     (
                         ARG1
                     )
@@ -849,7 +849,7 @@
 
             (macro del_entries ((type ARG1))
                 (allow ARG1 cert_file del_entry_dir_perms)
-                (call files.generic_cert.search
+                (call misc.generic_cert.search
                     (
                         ARG1
                     )
@@ -876,7 +876,7 @@
 
             (macro delete_dirs ((type ARG1))
                 (allow ARG1 cert_file delete_dir_perms)
-                (call files.generic_cert.search
+                (call misc.generic_cert.search
                     (
                         ARG1
                     )
@@ -885,7 +885,7 @@
 
             (macro delete_files ((type ARG1))
                 (allow ARG1 cert_file delete_file_perms)
-                (call files.generic_cert.search
+                (call misc.generic_cert.search
                     (
                         ARG1
                     )
@@ -894,7 +894,7 @@
 
             (macro delete_lnk_files ((type ARG1))
                 (allow ARG1 cert_file delete_lnk_file_perms)
-                (call files.generic_cert.search
+                (call misc.generic_cert.search
                     (
                         ARG1
                     )
@@ -903,7 +903,7 @@
 
             (macro execute ((type ARG1))
                 (allow ARG1 cert_file exec_file_perms)
-                (call files.generic_cert.search
+                (call misc.generic_cert.search
                     (
                         ARG1
                     )
@@ -936,7 +936,7 @@
                         )
                     )
                 )
-                (call files.generic_cert.search
+                (call misc.generic_cert.search
                     (
                         ARG1
                     )
@@ -951,7 +951,7 @@
                         )
                     )
                 )
-                (call files.generic_cert.search
+                (call misc.generic_cert.search
                     (
                         ARG1
                     )
@@ -966,7 +966,7 @@
                         )
                     )
                 )
-                (call files.generic_cert.search
+                (call misc.generic_cert.search
                     (
                         ARG1
                     )
@@ -975,7 +975,7 @@
 
             (macro list ((type ARG1))
                 (allow ARG1 cert_file list_dir_perms)
-                (call files.generic_cert.search
+                (call misc.generic_cert.search
                     (
                         ARG1
                     )
@@ -1002,7 +1002,7 @@
 
             (macro manage_dirs ((type ARG1))
                 (allow ARG1 cert_file manage_dir_perms)
-                (call files.generic_cert.search
+                (call misc.generic_cert.search
                     (
                         ARG1
                     )
@@ -1011,7 +1011,7 @@
 
             (macro manage_files ((type ARG1))
                 (allow ARG1 cert_file manage_file_perms)
-                (call files.generic_cert.search
+                (call misc.generic_cert.search
                     (
                         ARG1
                     )
@@ -1020,7 +1020,7 @@
 
             (macro manage_lnk_files ((type ARG1))
                 (allow ARG1 cert_file manage_lnk_file_perms)
-                (call files.generic_cert.search
+                (call misc.generic_cert.search
                     (
                         ARG1
                     )
@@ -1029,7 +1029,7 @@
 
             (macro mmap ((type ARG1))
                 (allow ARG1 cert_file mmap_file_perms)
-                (call files.generic_cert.search
+                (call misc.generic_cert.search
                     (
                         ARG1
                     )
@@ -1065,7 +1065,7 @@
 
             (macro read_files ((type ARG1))
                 (allow ARG1 cert_file read_file_perms)
-                (call files.generic_cert.search
+                (call misc.generic_cert.search
                     (
                         ARG1
                     )
@@ -1074,7 +1074,7 @@
 
             (macro read_lnk_files ((type ARG1))
                 (allow ARG1 cert_file read_lnk_file_perms)
-                (call files.generic_cert.search
+                (call misc.generic_cert.search
                     (
                         ARG1
                     )
@@ -1101,7 +1101,7 @@
 
             (macro relabel_dirs ((type ARG1))
                 (allow ARG1 cert_file relabel_dir_perms)
-                (call files.generic_cert.search
+                (call misc.generic_cert.search
                     (
                         ARG1
                     )
@@ -1110,7 +1110,7 @@
 
             (macro relabel_files ((type ARG1))
                 (allow ARG1 cert_file relabel_file_perms)
-                (call files.generic_cert.search
+                (call misc.generic_cert.search
                     (
                         ARG1
                     )
@@ -1119,7 +1119,7 @@
 
             (macro relabel_lnk_files ((type ARG1))
                 (allow ARG1 cert_file relabel_lnk_file_perms)
-                (call files.generic_cert.search
+                (call misc.generic_cert.search
                     (
                         ARG1
                     )
@@ -1146,7 +1146,7 @@
 
             (macro relabelfrom_dirs ((type ARG1))
                 (allow ARG1 cert_file relabelfrom_dir_perms)
-                (call files.generic_cert.search
+                (call misc.generic_cert.search
                     (
                         ARG1
                     )
@@ -1155,7 +1155,7 @@
 
             (macro relabelfrom_files ((type ARG1))
                 (allow ARG1 cert_file relabelfrom_file_perms)
-                (call files.generic_cert.search
+                (call misc.generic_cert.search
                     (
                         ARG1
                     )
@@ -1164,7 +1164,7 @@
 
             (macro relabelfrom_lnk_files ((type ARG1))
                 (allow ARG1 cert_file relabelfrom_lnk_file_perms)
-                (call files.generic_cert.search
+                (call misc.generic_cert.search
                     (
                         ARG1
                     )
@@ -1191,7 +1191,7 @@
 
             (macro relabelto_dirs ((type ARG1))
                 (allow ARG1 cert_file relabelto_dir_perms)
-                (call files.generic_cert.search
+                (call misc.generic_cert.search
                     (
                         ARG1
                     )
@@ -1200,7 +1200,7 @@
 
             (macro relabelto_files ((type ARG1))
                 (allow ARG1 cert_file relabelto_file_perms)
-                (call files.generic_cert.search
+                (call misc.generic_cert.search
                     (
                         ARG1
                     )
@@ -1209,7 +1209,7 @@
 
             (macro relabelto_lnk_files ((type ARG1))
                 (allow ARG1 cert_file relabelto_lnk_file_perms)
-                (call files.generic_cert.search
+                (call misc.generic_cert.search
                     (
                         ARG1
                     )
@@ -1236,7 +1236,7 @@
 
             (macro rename_dirs ((type ARG1))
                 (allow ARG1 cert_file rename_dir_perms)
-                (call files.generic_cert.search
+                (call misc.generic_cert.search
                     (
                         ARG1
                     )
@@ -1245,7 +1245,7 @@
 
             (macro rename_files ((type ARG1))
                 (allow ARG1 cert_file rename_file_perms)
-                (call files.generic_cert.search
+                (call misc.generic_cert.search
                     (
                         ARG1
                     )
@@ -1254,7 +1254,7 @@
 
             (macro rename_lnk_files ((type ARG1))
                 (allow ARG1 cert_file rename_lnk_file_perms)
-                (call files.generic_cert.search
+                (call misc.generic_cert.search
                     (
                         ARG1
                     )
@@ -1281,7 +1281,7 @@
 
             (macro rw_dirs ((type ARG1))
                 (allow ARG1 cert_file rw_dir_perms)
-                (call files.generic_cert.search
+                (call misc.generic_cert.search
                     (
                         ARG1
                     )
@@ -1290,7 +1290,7 @@
 
             (macro rw_files ((type ARG1))
                 (allow ARG1 cert_file rw_file_perms)
-                (call files.generic_cert.search
+                (call misc.generic_cert.search
                     (
                         ARG1
                     )
@@ -1299,7 +1299,7 @@
 
             (macro rw_lnk_files ((type ARG1))
                 (allow ARG1 cert_file rw_lnk_file_perms)
-                (call files.generic_cert.search
+                (call misc.generic_cert.search
                     (
                         ARG1
                     )
@@ -1308,7 +1308,7 @@
 
             (macro search ((type ARG1))
                 (allow ARG1 cert_file search_dir_perms)
-                (call files.generic_cert.search
+                (call misc.generic_cert.search
                     (
                         ARG1
                     )
@@ -1341,7 +1341,7 @@
                         )
                     )
                 )
-                (call files.generic_cert.search
+                (call misc.generic_cert.search
                     (
                         ARG1
                     )
@@ -1356,7 +1356,7 @@
                         )
                     )
                 )
-                (call files.generic_cert.search
+                (call misc.generic_cert.search
                     (
                         ARG1
                     )
@@ -1371,7 +1371,7 @@
                         )
                     )
                 )
-                (call files.generic_cert.search
+                (call misc.generic_cert.search
                     (
                         ARG1
                     )
@@ -1398,7 +1398,7 @@
 
             (macro write_dirs ((type ARG1))
                 (allow ARG1 cert_file write_dir_perms)
-                (call files.generic_cert.search
+                (call misc.generic_cert.search
                     (
                         ARG1
                     )
@@ -1407,7 +1407,7 @@
 
             (macro write_files ((type ARG1))
                 (allow ARG1 cert_file write_file_perms)
-                (call files.generic_cert.search
+                (call misc.generic_cert.search
                     (
                         ARG1
                     )
@@ -1416,7 +1416,7 @@
 
             (macro write_lnk_files ((type ARG1))
                 (allow ARG1 cert_file write_lnk_file_perms)
-                (call files.generic_cert.search
+                (call misc.generic_cert.search
                     (
                         ARG1
                     )
