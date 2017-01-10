@@ -799,11 +799,11 @@
 
             (blockinherit subj.common_subj.subj_template)
 
-;            (call users.common_user.subj_type
- ;               (
-  ;                  subj
-   ;             )
-    ;        )
+            (call users.common_user.subj_type
+                (
+                    subj
+                )
+            )
         )
 
         (block subj_template
@@ -16523,6 +16523,12 @@
 
         (blockinherit subj_policy_template)
 
+        (call priv_user.subj_type
+            (
+                subj_type_attribute
+            )
+        )
+
         ;
         ; priv_login_user templates
         ;
@@ -16558,7 +16564,7 @@
 
             (blockabstract subj_template)
 
-            (blockinherit users.priv_user.subj_template)
+            (blockinherit users.common_login_user.subj_template)
 
             (user id)
             (userrole id role)
@@ -16571,11 +16577,17 @@
                 )
             )
 
-;            (call users.priv_login_user.subj_type
- ;               (
-  ;                  subj
-   ;             )
-    ;        )
+            (call users.priv_login_user.subj_type
+                (
+                    subj
+                )
+            )
+
+            (call rbacsep_exemption_role
+                (
+                    role
+                )
+            )
 
             (call sys.roleallow_role
                 (
@@ -16660,11 +16672,11 @@
 
             (blockinherit users.common_user.subj_template)
 
-;            (call users.priv_user.subj_type
- ;               (
-  ;                  subj
-   ;             )
-    ;        )
+            (call users.priv_user.subj_type
+                (
+                    subj
+                )
+            )
 
             (call rbacsep_exemption_role
                 (
@@ -16906,6 +16918,12 @@
 
         (typeattribute subj_type_attribute)
 
+        (call unpriv_user.subj_type
+            (
+                subj_type_attribute
+            )
+        )
+
         ;
         ; unpriv_login_user templates
         ;
@@ -16918,7 +16936,7 @@
 
             (blockabstract subj_template)
 
-            (blockinherit users.unpriv_user.subj_template)
+            (blockinherit users.common_login_user.subj_template)
 
             (user id)
             (userrole id role)
