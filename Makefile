@@ -53,7 +53,8 @@ BASE_POLICY_SOURCES = policy/base/access_vectors.cil \
 
 STANDARD_POLICY_SOURCES = policy/standard.cil \
 	policy/system/miscfiles.cil \
-	policy/system/users.cil
+	policy/system/users.cil \
+	policy/testuser.cil
 
 all: clean policy.$(POLICY_VERSION)
 
