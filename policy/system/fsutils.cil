@@ -227,21 +227,21 @@
     ;;    )
     ;;)
 
-    ;;(call seutils.config.read_files
-    ;;    (
-    ;;        subj
-    ;;    )
-    ;;)
-    ;;(call seutils.default_context.read_files
-    ;;    (
-    ;;        subj
-    ;;    )
-    ;;)
-    ;;(call seutils.file_context.read_files
-    ;;    (
-    ;;        subj
-    ;;    )
-    ;;)
+    (call seutils.config.read_files
+        (
+            subj
+        )
+    )
+    (call seutils.default_context.read_files
+        (
+            subj
+        )
+    )
+    (call seutils.file_context.read_files
+        (
+            subj
+        )
+    )
 
     ;;(call udev.client_subj_type
     ;;    (

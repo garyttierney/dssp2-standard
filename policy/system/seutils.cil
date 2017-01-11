@@ -1,0 +1,2936 @@
+; -*- mode: CIL; fill-column: 75; indent-tabs-mode: nil; tab-width: 4 -*-
+
+; SEutils policy
+;
+; 1. SEutils name space
+;       SEutils config name space
+;       SEutils default_context name space
+;       SEutils file_context name space
+;       SEutils load_policy name space
+;       SEutils matchpathcon name space
+;       SEutils policy name space
+;           SEutils policy config name space
+;           SEutils policy store name space
+;       SEutils setenforce name space
+;       SEutils setfiles name space
+;           SEutils setfiles boot_flag name space
+;           SEutils setfiles tmpfs name space
+;       SEutils setsebool name space
+
+;
+; SEutils name space
+;
+
+(block seutils
+
+    ;
+    ; Macros
+    ;
+
+    (macro libselinux_linked_subj_type ((type ARG1))
+        (typeattributeset libselinux_linked_subj_type_attribute ARG1)
+    )
+
+    (macro relabelto_policy_config_files_subj_type ((type ARG1))
+        (typeattributeset relabelto_policy_config_files_subj_type_attribute
+            ARG1)
+    )
+
+    (macro write_policy_config_files_subj_type ((type ARG1))
+        (typeattributeset write_policy_config_files_subj_type_attribute
+            ARG1)
+    )
+
+    ;
+    ; Policy
+    ;
+
+    (typeattribute libselinux_linked_subj_type_attribute)
+
+    (typeattribute not_relabelto_policy_config_files_subj_type_attribute)
+    (typeattribute relabelto_policy_config_files_subj_type_attribute)
+
+    (typeattribute not_write_policy_config_files_subj_type_attribute)
+    (typeattribute write_policy_config_files_subj_type_attribute)
+
+    (typeattributeset not_relabelto_policy_config_files_subj_type_attribute
+        (not
+            (
+                relabelto_policy_config_files_subj_type_attribute
+            )
+        )
+    )
+
+    (typeattributeset not_write_policy_config_files_subj_type_attribute
+        (not
+            (
+                write_policy_config_files_subj_type_attribute
+            )
+        )
+    )
+
+    (call fs.sysfs.search
+        (
+            libselinux_linked_subj_type_attribute
+        )
+    )
+
+    (call sec.securityfs.getattr_fs
+        (
+            libselinux_linked_subj_type_attribute
+        )
+    )
+
+    ;
+    ; SEutils config name space
+    ;
+
+    (block config
+
+        ;
+        ; config contexts
+        ;
+
+        (filecon "/etc/selinux(/.*)?" any config_file_context)
+        (filecon "/etc/selinux/([^/]*/)?seusers" file config_file_context)
+        (filecon "/etc/selinux/([^/]*/)?users(/.*)?" file
+            config_file_context)
+
+        ;
+        ; config macros
+        ;
+
+        (macro generic_config_obj_type_transition ((type ARG1))
+            (call files.generic_config.obj_type_transition
+                (
+                    ARG1 config_file dir "selinux"
+                )
+            )
+        )
+
+        ;
+        ; config policy
+        ;
+
+        (blockinherit files.config_file.obj_template)
+
+        (call search
+            (
+                libselinux_linked_subj_type_attribute
+            )
+        )
+    )
+
+    ;
+    ; SEutils default_context name space
+    ;
+
+    (block default_context
+
+        ;
+        ; default_context contexts
+        ;
+
+        (filecon "/etc/selinux/([^/]*/)?contexts(/.*)?" any
+            config_file_context)
+
+        ;
+        ; default_context macros
+        ;
+
+        (macro add_entries ((type ARG1))
+            (allow ARG1 config_file add_entry_dir_perms)
+            (call config.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro append_files ((type ARG1))
+            (allow ARG1 config_file append_file_perms)
+            (call config.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro create ((type ARG1))
+            (call create_dirs
+                (
+                    ARG1
+                )
+            )
+            (call create_files
+                (
+                    ARG1
+                )
+            )
+            (call create_lnk_files
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro create_dirs ((type ARG1))
+            (allow ARG1 config_file create_dir_perms)
+            (call config.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro create_files ((type ARG1))
+            (allow ARG1 config_file create_file_perms)
+            (call config.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro create_lnk_files ((type ARG1))
+            (allow ARG1 config_file create_lnk_file_perms)
+            (call config.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro del_entries ((type ARG1))
+            (allow ARG1 config_file del_entry_dir_perms)
+            (call config.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro delete ((type ARG1))
+            (call delete_dirs
+                (
+                    ARG1
+                )
+            )
+            (call delete_files
+                (
+                    ARG1
+                )
+            )
+            (call delete_lnk_files
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro delete_dirs ((type ARG1))
+            (allow ARG1 config_file delete_dir_perms)
+            (call config.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro delete_files ((type ARG1))
+            (allow ARG1 config_file delete_file_perms)
+            (call config.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro delete_lnk_files ((type ARG1))
+            (allow ARG1 config_file delete_lnk_file_perms)
+            (call config.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro execute ((type ARG1))
+            (allow ARG1 config_file exec_file_perms)
+            (call config.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro getattr ((type ARG1))
+            (call getattr_dirs
+                (
+                    ARG1
+                )
+            )
+            (call getattr_files
+                (
+                    ARG1
+                )
+            )
+            (call getattr_lnk_files
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro getattr_dirs ((type ARG1))
+            (allow ARG1 config_file
+                (dir
+                    (
+                        getattr
+                    )
+                )
+            )
+            (call config.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro getattr_files ((type ARG1))
+            (allow ARG1 config_file
+                (file
+                    (
+                        getattr
+                    )
+                )
+            )
+            (call config.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro getattr_lnk_files ((type ARG1))
+            (allow ARG1 config_file
+                (lnk_file
+                    (
+                        getattr
+                    )
+                )
+            )
+            (call config.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro list ((type ARG1))
+            (allow ARG1 config_file list_dir_perms)
+            (call config.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro manage ((type ARG1))
+            (call manage_dirs
+                (
+                    ARG1
+                )
+            )
+            (call manage_files
+                (
+                    ARG1
+                )
+            )
+            (call manage_lnk_files
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro manage_dirs ((type ARG1))
+            (allow ARG1 config_file manage_dir_perms)
+            (call config.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro manage_files ((type ARG1))
+            (allow ARG1 config_file manage_file_perms)
+            (call config.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro manage_lnk_files ((type ARG1))
+            (allow ARG1 config_file manage_lnk_file_perms)
+            (call config.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro mmap ((type ARG1))
+            (allow ARG1 config_file mmap_file_perms)
+            (call config.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro obj_type_transition ((type ARG1)(type ARG2)(class ARG3)(name ARG4))
+            (typetransition ARG1 config_file ARG3 ARG4 ARG2)
+            (call rw_dirs
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro read ((type ARG1))
+            (call list
+                (
+                    ARG1
+                )
+            )
+            (call read_files
+                (
+                    ARG1
+                )
+            )
+            (call read_lnk_files
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro read_files ((type ARG1))
+            (allow ARG1 config_file read_file_perms)
+            (call config.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro read_lnk_files ((type ARG1))
+            (allow ARG1 config_file read_lnk_file_perms)
+            (call config.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro relabel ((type ARG1))
+            (call relabel_dirs
+                (
+                    ARG1
+                )
+            )
+            (call relabel_files
+                (
+                    ARG1
+                )
+            )
+            (call relabel_lnk_files
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro relabel_dirs ((type ARG1))
+            (allow ARG1 config_file relabel_dir_perms)
+            (call config.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro relabel_files ((type ARG1))
+            (allow ARG1 config_file relabel_file_perms)
+            (call config.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro relabel_lnk_files ((type ARG1))
+            (allow ARG1 config_file relabel_lnk_file_perms)
+            (call config.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro relabelfrom ((type ARG1))
+            (call relabelfrom_dirs
+                (
+                    ARG1
+                )
+            )
+            (call relabelfrom_files
+                (
+                    ARG1
+                )
+            )
+            (call relabelfrom_lnk_files
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro relabelfrom_dirs ((type ARG1))
+            (allow ARG1 config_file relabelfrom_dir_perms)
+            (call config.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro relabelfrom_files ((type ARG1))
+            (allow ARG1 config_file relabelfrom_file_perms)
+            (call config.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro relabelfrom_lnk_files ((type ARG1))
+            (allow ARG1 config_file relabelfrom_lnk_file_perms)
+            (call config.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro relabelto ((type ARG1))
+            (call relabelto_dirs
+                (
+                    ARG1
+                )
+            )
+            (call relabelto_files
+                (
+                    ARG1
+                )
+            )
+            (call relabelto_lnk_files
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro relabelto_dirs ((type ARG1))
+            (allow ARG1 config_file relabelto_dir_perms)
+            (call config.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro relabelto_files ((type ARG1))
+            (allow ARG1 config_file relabelto_file_perms)
+            (call config.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro relabelto_lnk_files ((type ARG1))
+            (allow ARG1 config_file relabelto_lnk_file_perms)
+            (call config.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro rename ((type ARG1))
+            (call rename_dirs
+                (
+                    ARG1
+                )
+            )
+            (call rename_files
+                (
+                    ARG1
+                )
+            )
+            (call rename_lnk_files
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro rename_dirs ((type ARG1))
+            (allow ARG1 config_file rename_dir_perms)
+            (call config.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro rename_files ((type ARG1))
+            (allow ARG1 config_file rename_file_perms)
+            (call config.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro rename_lnk_files ((type ARG1))
+            (allow ARG1 config_file rename_lnk_file_perms)
+            (call config.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro rw ((type ARG1))
+            (call rw_dirs
+                (
+                    ARG1
+                )
+            )
+            (call rw_files
+                (
+                    ARG1
+                )
+            )
+            (call rw_lnk_files
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro rw_dirs ((type ARG1))
+            (allow ARG1 config_file rw_dir_perms)
+            (call config.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro rw_files ((type ARG1))
+            (allow ARG1 config_file rw_file_perms)
+            (call config.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro rw_lnk_files ((type ARG1))
+            (allow ARG1 config_file rw_lnk_file_perms)
+            (call config.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro search ((type ARG1))
+            (allow ARG1 config_file search_dir_perms)
+            (call config.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro setattr ((type ARG1))
+            (call setattr_dirs
+                (
+                    ARG1
+                )
+            )
+            (call setattr_files
+                (
+                    ARG1
+                )
+            )
+            (call setattr_lnk_files
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro setattr_dirs ((type ARG1))
+            (allow ARG1 config_file
+                (dir
+                    (
+                        setattr
+                    )
+                )
+            )
+            (call config.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro setattr_files ((type ARG1))
+            (allow ARG1 config_file
+                (file
+                    (
+                        setattr
+                    )
+                )
+            )
+            (call config.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro setattr_lnk_files ((type ARG1))
+            (allow ARG1 config_file
+                (lnk_file
+                    (
+                        setattr
+                    )
+                )
+            )
+            (call config.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro seutils_config_obj_type_transition ((type ARG1))
+            (call config.obj_type_transition
+                (
+                    ARG1 config_file dir "contexts"
+                )
+            )
+        )
+
+        (macro write ((type ARG1))
+            (call write_dirs
+                (
+                    ARG1
+                )
+            )
+            (call write_files
+                (
+                    ARG1
+                )
+            )
+            (call write_lnk_files
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro write_dirs ((type ARG1))
+            (allow ARG1 config_file write_dir_perms)
+            (call config.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro write_files ((type ARG1))
+            (allow ARG1 config_file write_file_perms)
+            (call config.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro write_lnk_files ((type ARG1))
+            (allow ARG1 config_file write_lnk_file_perms)
+            (call config.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        ;
+        ; default_context policy
+        ;
+
+        (blockinherit files.config_file.obj_stub)
+    )
+
+    ;
+    ; SEutils file_context name space
+    ;
+
+    (block file_context
+
+        ;
+        ; file_context contexts
+        ;
+
+        (filecon "/etc/selinux/([^/]*/)?contexts/files(/.*)?" any
+            config_file_context)
+
+        ;
+        ; file_context macros
+        ;
+
+        (macro add_entries ((type ARG1))
+            (allow ARG1 config_file add_entry_dir_perms)
+            (call default_context.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro append_files ((type ARG1))
+            (allow ARG1 config_file append_file_perms)
+            (call default_context.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro create ((type ARG1))
+            (call create_dirs
+                (
+                    ARG1
+                )
+            )
+            (call create_files
+                (
+                    ARG1
+                )
+            )
+            (call create_lnk_files
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro create_dirs ((type ARG1))
+            (allow ARG1 config_file create_dir_perms)
+            (call default_context.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro create_files ((type ARG1))
+            (allow ARG1 config_file create_file_perms)
+            (call default_context.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro create_lnk_files ((type ARG1))
+            (allow ARG1 config_file create_lnk_file_perms)
+            (call default_context.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro del_entries ((type ARG1))
+            (allow ARG1 config_file del_entry_dir_perms)
+            (call default_context.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro delete ((type ARG1))
+            (call delete_dirs
+                (
+                    ARG1
+                )
+            )
+            (call delete_files
+                (
+                    ARG1
+                )
+            )
+            (call delete_lnk_files
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro delete_dirs ((type ARG1))
+            (allow ARG1 config_file delete_dir_perms)
+            (call default_context.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro delete_files ((type ARG1))
+            (allow ARG1 config_file delete_file_perms)
+            (call default_context.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro delete_lnk_files ((type ARG1))
+            (allow ARG1 config_file delete_lnk_file_perms)
+            (call default_context.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro execute ((type ARG1))
+            (allow ARG1 config_file exec_file_perms)
+            (call default_context.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro getattr ((type ARG1))
+            (call getattr_dirs
+                (
+                    ARG1
+                )
+            )
+            (call getattr_files
+                (
+                    ARG1
+                )
+            )
+            (call getattr_lnk_files
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro getattr_dirs ((type ARG1))
+            (allow ARG1 config_file
+                (dir
+                    (
+                        getattr
+                    )
+                )
+            )
+            (call default_context.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro getattr_files ((type ARG1))
+            (allow ARG1 config_file
+                (file
+                    (
+                        getattr
+                    )
+                )
+            )
+            (call default_context.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro getattr_lnk_files ((type ARG1))
+            (allow ARG1 config_file
+                (lnk_file
+                    (
+                        getattr
+                    )
+                )
+            )
+            (call default_context.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro list ((type ARG1))
+            (allow ARG1 config_file list_dir_perms)
+            (call default_context.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro manage ((type ARG1))
+            (call manage_dirs
+                (
+                    ARG1
+                )
+            )
+            (call manage_files
+                (
+                    ARG1
+                )
+            )
+            (call manage_lnk_files
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro manage_dirs ((type ARG1))
+            (allow ARG1 config_file manage_dir_perms)
+            (call default_context.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro manage_files ((type ARG1))
+            (allow ARG1 config_file manage_file_perms)
+            (call default_context.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro manage_lnk_files ((type ARG1))
+            (allow ARG1 config_file manage_lnk_file_perms)
+            (call default_context.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro mmap ((type ARG1))
+            (allow ARG1 config_file mmap_file_perms)
+            (call default_context.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro obj_type_transition ((type ARG1)(type ARG2)(class ARG3)(name ARG4))
+            (typetransition ARG1 config_file ARG3 ARG4 ARG2)
+            (call rw_dirs
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro read ((type ARG1))
+            (call list
+                (
+                    ARG1
+                )
+            )
+            (call read_files
+                (
+                    ARG1
+                )
+            )
+            (call read_lnk_files
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro read_files ((type ARG1))
+            (allow ARG1 config_file read_file_perms)
+            (call default_context.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro read_lnk_files ((type ARG1))
+            (allow ARG1 config_file read_lnk_file_perms)
+            (call default_context.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro relabel ((type ARG1))
+            (call relabel_dirs
+                (
+                    ARG1
+                )
+            )
+            (call relabel_files
+                (
+                    ARG1
+                )
+            )
+            (call relabel_lnk_files
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro relabel_dirs ((type ARG1))
+            (allow ARG1 config_file relabel_dir_perms)
+            (call default_context.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro relabel_files ((type ARG1))
+            (allow ARG1 config_file relabel_file_perms)
+            (call default_context.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro relabel_lnk_files ((type ARG1))
+            (allow ARG1 config_file relabel_lnk_file_perms)
+            (call default_context.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro relabelfrom ((type ARG1))
+            (call relabelfrom_dirs
+                (
+                    ARG1
+                )
+            )
+            (call relabelfrom_files
+                (
+                    ARG1
+                )
+            )
+            (call relabelfrom_lnk_files
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro relabelfrom_dirs ((type ARG1))
+            (allow ARG1 config_file relabelfrom_dir_perms)
+            (call default_context.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro relabelfrom_files ((type ARG1))
+            (allow ARG1 config_file relabelfrom_file_perms)
+            (call default_context.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro relabelfrom_lnk_files ((type ARG1))
+            (allow ARG1 config_file relabelfrom_lnk_file_perms)
+            (call default_context.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro relabelto ((type ARG1))
+            (call relabelto_dirs
+                (
+                    ARG1
+                )
+            )
+            (call relabelto_files
+                (
+                    ARG1
+                )
+            )
+            (call relabelto_lnk_files
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro relabelto_dirs ((type ARG1))
+            (allow ARG1 config_file relabelto_dir_perms)
+            (call default_context.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro relabelto_files ((type ARG1))
+            (allow ARG1 config_file relabelto_file_perms)
+            (call default_context.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro relabelto_lnk_files ((type ARG1))
+            (allow ARG1 config_file relabelto_lnk_file_perms)
+            (call default_context.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro rename ((type ARG1))
+            (call rename_dirs
+                (
+                    ARG1
+                )
+            )
+            (call rename_files
+                (
+                    ARG1
+                )
+            )
+            (call rename_lnk_files
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro rename_dirs ((type ARG1))
+            (allow ARG1 config_file rename_dir_perms)
+            (call default_context.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro rename_files ((type ARG1))
+            (allow ARG1 config_file rename_file_perms)
+            (call default_context.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro rename_lnk_files ((type ARG1))
+            (allow ARG1 config_file rename_lnk_file_perms)
+            (call default_context.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro rw ((type ARG1))
+            (call rw_dirs
+                (
+                    ARG1
+                )
+            )
+            (call rw_files
+                (
+                    ARG1
+                )
+            )
+            (call rw_lnk_files
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro rw_dirs ((type ARG1))
+            (allow ARG1 config_file rw_dir_perms)
+            (call default_context.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro rw_files ((type ARG1))
+            (allow ARG1 config_file rw_file_perms)
+            (call default_context.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro rw_lnk_files ((type ARG1))
+            (allow ARG1 config_file rw_lnk_file_perms)
+            (call default_context.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro search ((type ARG1))
+            (allow ARG1 config_file search_dir_perms)
+            (call default_context.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro setattr ((type ARG1))
+            (call setattr_dirs
+                (
+                    ARG1
+                )
+            )
+            (call setattr_files
+                (
+                    ARG1
+                )
+            )
+            (call setattr_lnk_files
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro setattr_dirs ((type ARG1))
+            (allow ARG1 config_file
+                (dir
+                    (
+                        setattr
+                    )
+                )
+            )
+            (call default_context.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro setattr_files ((type ARG1))
+            (allow ARG1 config_file
+                (file
+                    (
+                        setattr
+                    )
+                )
+            )
+            (call default_context.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro setattr_lnk_files ((type ARG1))
+            (allow ARG1 config_file
+                (lnk_file
+                    (
+                        setattr
+                    )
+                )
+            )
+            (call default_context.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro seutils_default_context_obj_type_transition ((type ARG1))
+            (call default_context.obj_type_transition
+                (
+                    ARG1 config_file dir "files"
+                )
+            )
+        )
+
+        (macro write ((type ARG1))
+            (call write_dirs
+                (
+                    ARG1
+                )
+            )
+            (call write_files
+                (
+                    ARG1
+                )
+            )
+            (call write_lnk_files
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro write_dirs ((type ARG1))
+            (allow ARG1 config_file write_dir_perms)
+            (call default_context.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro write_files ((type ARG1))
+            (allow ARG1 config_file write_file_perms)
+            (call default_context.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro write_lnk_files ((type ARG1))
+            (allow ARG1 config_file write_lnk_file_perms)
+            (call default_context.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        ;
+        ; file_context policy
+        ;
+
+        (blockinherit files.config_file.obj_stub)
+    )
+
+    ;
+    ; SEutils load_policy name space
+    ;
+
+    (block load_policy
+
+        ;
+        ; load_policy contexts
+        ;
+
+        (filecon "/usr/sbin/load_policy" file cmd_file_context)
+
+        ;
+        ; load_policy macros
+        ;
+
+        (macro dontaudit_audit_access_files ((type ARG1))
+            (dontaudit ARG1 cmd_file
+                (file
+                    (
+                        audit_access
+                    )
+                )
+            )
+        )
+
+        ;
+        ; load_policy policy
+        ;
+
+        (blockinherit hybrid_agent_template)
+
+        (call config.read_files
+            (
+                subj
+            )
+        )
+        (call policy.config.read_files
+            (
+                subj
+            )
+        )
+
+        (call files.generic_config.read_files
+            (
+                subj
+            )
+        )
+
+        (call sec.load_policy_subj_type
+            (
+                subj
+            )
+        )
+
+        (optional load_policy_optional_rpm
+            (call rpm.script.client_subj_type
+                (
+                    subj
+                )
+            )
+        )
+
+        (optional load_policy_optional_systemd
+            (call systemd.forked_subj_type
+                (
+                    subj
+                )
+            )
+        )
+    )
+
+    ;
+    ; SEutils matchpathcon name space
+    ;
+
+    (block matchpathcon
+
+        ;
+        ; matchpathcon contexts
+        ;
+
+        (filecon "/usr/sbin/matchpathcon" file cmd_file_context)
+
+        ;
+        ; matchpathcon policy
+        ;
+
+        (blockinherit user_agent_template)
+
+        (dontaudit subj self
+            (capability
+                (
+                    dac_override
+                )
+            )
+        )
+        (allow subj self
+            (capability
+                (
+                    dac_read_search
+                )
+            )
+        )
+
+        (call config.read_files
+            (
+                subj
+            )
+        )
+        (call file_context.read_files
+            (
+                subj
+            )
+        )
+
+        (call sys.proc_file.getattr_files
+            (
+                subj
+            )
+        )
+        (call sys.proc_file.getattr_lnk_files
+            (
+                subj
+            )
+        )
+        (call sys.sysctl_file.getattr_files
+            (
+                subj
+            )
+        )
+        (call sys.sysctl_file.getattr_lnk_files
+            (
+                subj
+            )
+        )
+        (call sys.sysfs_file.getattr_files
+            (
+                subj
+            )
+        )
+        (call sys.sysfs_file.getattr_lnk_files
+            (
+                subj
+            )
+        )
+
+        (call dev.dev_file.getattr_chr_files
+            (
+                subj
+            )
+        )
+
+        (call files.file.getattr
+            (
+                subj
+            )
+        )
+        (call files.file.read_lnk_files
+            (
+                subj
+            )
+        )
+
+        (call fs.getattr
+            (
+                subj
+            )
+        )
+        (call fs.read_lnk_files
+            (
+                subj
+            )
+        )
+
+        (call sec.validate_context
+            (
+                subj
+            )
+        )
+    )
+
+    ;
+    ; SEutils policy name space
+    ;
+
+    (block policy
+
+        ;
+        ; Seutils policy config name space
+        ;
+
+        (block config
+
+            ;
+            ; policy config contexts
+            ;
+
+            (filecon "/etc/selinux/([^/]*/)?policy(/.*)?" any
+                sec_file_context)
+
+            ;
+            ; policy config macros
+            ;
+
+            (macro add_entries ((type ARG1))
+                (allow ARG1 sec_file add_entry_dir_perms)
+                (call seutils.config.search
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro append_files ((type ARG1))
+                (allow ARG1 sec_file append_file_perms)
+                (call seutils.config.search
+                    (
+                        ARG1
+                    )
+                )
+                (call write_policy_config_files_subj_type
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro create ((type ARG1))
+                (call create_dirs
+                    (
+                        ARG1
+                    )
+                )
+                (call create_files
+                    (
+                        ARG1
+                    )
+                )
+                (call create_lnk_files
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro create_dirs ((type ARG1))
+                (allow ARG1 sec_file create_dir_perms)
+                (call seutils.config.search
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro create_files ((type ARG1))
+                (allow ARG1 sec_file create_file_perms)
+                (call seutils.config.search
+                    (
+                        ARG1
+                    )
+                )
+                (call write_policy_config_files_subj_type
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro create_lnk_files ((type ARG1))
+                (allow ARG1 sec_file create_lnk_file_perms)
+                (call seutils.config.search
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro del_entries ((type ARG1))
+                (allow ARG1 sec_file del_entry_dir_perms)
+                (call seutils.config.search
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro delete ((type ARG1))
+                (call delete_dirs
+                    (
+                        ARG1
+                    )
+                )
+                (call delete_files
+                    (
+                        ARG1
+                    )
+                )
+                (call delete_lnk_files
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro delete_dirs ((type ARG1))
+                (allow ARG1 sec_file delete_dir_perms)
+                (call seutils.config.search
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro delete_files ((type ARG1))
+                (allow ARG1 sec_file delete_file_perms)
+                (call seutils.config.search
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro delete_lnk_files ((type ARG1))
+                (allow ARG1 sec_file delete_lnk_file_perms)
+                (call seutils.config.search
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro execute ((type ARG1))
+                (allow ARG1 sec_file exec_file_perms)
+                (call seutils.config.search
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro getattr ((type ARG1))
+                (call getattr_dirs
+                    (
+                        ARG1
+                    )
+                )
+                (call getattr_files
+                    (
+                        ARG1
+                    )
+                )
+                (call getattr_lnk_files
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro getattr_dirs ((type ARG1))
+                (allow ARG1 sec_file
+                    (dir
+                        (
+                            getattr
+                        )
+                    )
+                )
+                (call seutils.config.search
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro getattr_files ((type ARG1))
+                (allow ARG1 sec_file
+                    (file
+                        (
+                            getattr
+                        )
+                    )
+                )
+                (call seutils.config.search
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro getattr_lnk_files ((type ARG1))
+                (allow ARG1 sec_file
+                    (lnk_file
+                        (
+                            getattr
+                        )
+                    )
+                )
+                (call seutils.config.search
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro list ((type ARG1))
+                (allow ARG1 sec_file list_dir_perms)
+                (call seutils.config.search
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro manage ((type ARG1))
+                (call manage_dirs
+                    (
+                        ARG1
+                    )
+                )
+                (call manage_files
+                    (
+                        ARG1
+                    )
+                )
+                (call manage_lnk_files
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro manage_dirs ((type ARG1))
+                (allow ARG1 sec_file manage_dir_perms)
+                (call seutils.config.search
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro manage_files ((type ARG1))
+                (allow ARG1 sec_file manage_file_perms)
+                (call seutils.config.search
+                    (
+                        ARG1
+                    )
+                )
+                (call write_policy_config_files_subj_type
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro manage_lnk_files ((type ARG1))
+                (allow ARG1 sec_file manage_lnk_file_perms)
+                (call seutils.config.search
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro mmap ((type ARG1))
+                (allow ARG1 sec_file mmap_file_perms)
+                (call seutils.config.search
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro obj_type_transition ((type ARG1)(type ARG2)(class ARG3)(name ARG4))
+                (typetransition ARG1 sec_file ARG3 ARG4 ARG2)
+                    (call rw_dirs
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro read ((type ARG1))
+                (call list
+                    (
+                        ARG1
+                    )
+                )
+                (call read_files
+                    (
+                        ARG1
+                    )
+                )
+                (call read_lnk_files
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro read_files ((type ARG1))
+                (allow ARG1 sec_file read_file_perms)
+                (call seutils.config.search
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro read_lnk_files ((type ARG1))
+                (allow ARG1 sec_file read_lnk_file_perms)
+                (call seutils.config.search
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro relabel ((type ARG1))
+                (call relabel_dirs
+                    (
+                        ARG1
+                    )
+                )
+                (call relabel_files
+                    (
+                        ARG1
+                    )
+                )
+                (call relabel_lnk_files
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro relabel_dirs ((type ARG1))
+                (allow ARG1 sec_file relabel_dir_perms)
+                (call seutils.config.search
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro relabel_files ((type ARG1))
+                (allow ARG1 sec_file relabel_file_perms)
+                (call seutils.config.search
+                    (
+                        ARG1
+                    )
+                )
+                (call relabelto_policy_config_files_subj_type
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro relabel_lnk_files ((type ARG1))
+                (allow ARG1 sec_file relabel_lnk_file_perms)
+                (call seutils.config.search
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro relabelfrom ((type ARG1))
+                (call relabelfrom_dirs
+                    (
+                        ARG1
+                    )
+                )
+                (call relabelfrom_files
+                    (
+                        ARG1
+                    )
+                )
+                (call relabelfrom_lnk_files
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro relabelfrom_dirs ((type ARG1))
+                (allow ARG1 sec_file relabelfrom_dir_perms)
+                (call seutils.config.search
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro relabelfrom_files ((type ARG1))
+                (allow ARG1 sec_file relabelfrom_file_perms)
+                (call seutils.config.search
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro relabelfrom_lnk_files ((type ARG1))
+                (allow ARG1 sec_file relabelfrom_lnk_file_perms)
+                (call seutils.config.search
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro relabelto ((type ARG1))
+                (call relabelto_dirs
+                    (
+                        ARG1
+                    )
+                )
+                (call relabelto_files
+                    (
+                        ARG1
+                    )
+                )
+                (call relabelto_lnk_files
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro relabelto_dirs ((type ARG1))
+                (allow ARG1 sec_file relabelto_dir_perms)
+                (call seutils.config.search
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro relabelto_files ((type ARG1))
+                (allow ARG1 sec_file relabelto_file_perms)
+                (call seutils.config.search
+                    (
+                        ARG1
+                    )
+                )
+                (call relabelto_policy_config_files_subj_type
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro relabelto_lnk_files ((type ARG1))
+                (allow ARG1 sec_file relabelto_lnk_file_perms)
+                (call seutils.config.search
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro rename ((type ARG1))
+                (call rename_dirs
+                    (
+                        ARG1
+                    )
+                )
+                (call rename_files
+                    (
+                        ARG1
+                    )
+                )
+                (call rename_lnk_files
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro rename_dirs ((type ARG1))
+                (allow ARG1 sec_file rename_dir_perms)
+                (call seutils.config.search
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro rename_files ((type ARG1))
+                (allow ARG1 sec_file rename_file_perms)
+                (call seutils.config.search
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro rename_lnk_files ((type ARG1))
+                (allow ARG1 sec_file rename_lnk_file_perms)
+                (call seutils.config.search
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro rw ((type ARG1))
+                (call rw_dirs
+                    (
+                        ARG1
+                    )
+                )
+                (call rw_files
+                    (
+                        ARG1
+                    )
+                )
+                (call rw_lnk_files
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro rw_dirs ((type ARG1))
+                (allow ARG1 sec_file rw_dir_perms)
+                (call seutils.config.search
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro rw_files ((type ARG1))
+                (allow ARG1 sec_file rw_file_perms)
+                (call seutils.config.search
+                    (
+                        ARG1
+                    )
+                )
+                (call write_policy_config_files_subj_type
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro rw_lnk_files ((type ARG1))
+                (allow ARG1 sec_file rw_lnk_file_perms)
+                (call seutils.config.search
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro search ((type ARG1))
+                (allow ARG1 sec_file search_dir_perms)
+                (call seutils.config.search
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro setattr ((type ARG1))
+                (call setattr_dirs
+                    (
+                        ARG1
+                    )
+                )
+                (call setattr_files
+                    (
+                        ARG1
+                    )
+                )
+                (call setattr_lnk_files
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro setattr_dirs ((type ARG1))
+                (allow ARG1 sec_file
+                    (dir
+                        (
+                            setattr
+                        )
+                    )
+                )
+                (call seutils.config.search
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro setattr_files ((type ARG1))
+                (allow ARG1 sec_file
+                    (file
+                        (
+                            setattr
+                        )
+                    )
+                )
+                (call seutils.config.search
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro setattr_lnk_files ((type ARG1))
+                (allow ARG1 sec_file
+                    (lnk_file
+                        (
+                            setattr
+                        )
+                    )
+                )
+                (call seutils.config.search
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro seutils_config_obj_type_transition ((type ARG1))
+                (call config.obj_type_transition
+                    (
+                        ARG1 sec_file dir "policy"
+                    )
+                )
+            )
+
+            (macro write ((type ARG1))
+                (call write_dirs
+                    (
+                        ARG1
+                    )
+                )
+                (call write_files
+                    (
+                        ARG1
+                    )
+                )
+                (call write_lnk_files
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro write_dirs ((type ARG1))
+                (allow ARG1 sec_file write_dir_perms)
+                (call seutils.config.search
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro write_files ((type ARG1))
+                (allow ARG1 sec_file write_file_perms)
+                (call seutils.config.search
+                    (
+                        ARG1
+                    )
+                )
+                (call write_policy_config_files_subj_type
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro write_lnk_files ((type ARG1))
+                (allow ARG1 sec_file write_lnk_file_perms)
+                (call seutils.config.search
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            ;
+            ; policy config policy
+            ;
+
+            (blockinherit files.sec_file.obj_stub)
+
+            (neverallow
+                not_relabelto_policy_config_files_subj_type_attribute
+                    sec_file
+                        (file
+                            (
+                                relabelto
+                            )
+                        )
+            )
+
+            (neverallow not_write_policy_config_files_subj_type_attribute
+                sec_file
+                    (file
+                        (
+                            append
+                            create
+                            write
+                        )
+                    )
+            )
+        )
+
+        ;
+        ; SEutils policy store name space
+        ;
+
+        (block store
+
+            ;
+            ; policy store contexts
+            ;
+
+            (filecon "/var/lib/selinux(/.*)?" any var_lib_file_context)
+
+            ;
+            ; policy store macros
+            ;
+
+            (macro generic_var_lib_obj_type_transition ((type ARG1))
+                (call files.generic_var_lib.obj_type_transition
+                    (
+                        ARG1 var_lib_file dir "selinux"
+                    )
+                )
+            )
+
+            ;
+            ; policy store policy
+            ;
+
+            (blockinherit files.var_lib_file.obj_template)
+        )
+    )
+
+    ;
+    ; SEutils setenforce name space
+    ;
+
+    (block setenforce
+
+        ;
+        ; setenforce contexts
+        ;
+
+        (filecon "/usr/sbin/setenforce" file cmd_file_context)
+
+        ;
+        ; setenforce policy
+        ;
+
+        (blockinherit user_agent_template)
+
+        (call config.read_files
+            (
+                subj
+            )
+        )
+
+        (call sec.set_enforce_subj_type
+            (
+                subj
+            )
+        )
+    )
+
+    ;
+    ; SEutils setfiles name space
+    ;
+
+    (block setfiles
+
+        ;
+        ; setfiles contexts
+        ;
+
+        (filecon "/usr/bin/chcon" file cmd_file_context)
+        (filecon "/usr/sbin/fixfiles" file cmd_file_context)
+        (filecon "/usr/sbin/setfiles" file cmd_file_context)
+
+        ;
+        ; setfiles macros
+        ;
+
+        (macro client_subj_type ((type ARG1))
+            (typeattributeset client_subj_type_attribute ARG1)
+        )
+
+        ;
+        ; setfiles policy
+        ;
+
+        (typeattribute client_subj_type_attribute)
+
+        (blockinherit hybrid_agent_template)
+
+        (allow subj self
+            (capability
+                (
+                    dac_override
+                    fowner
+                )
+            )
+        )
+
+        (call client_subj_type
+            (
+                subj
+            )
+        )
+
+        (call default_context.read_files
+            (
+                subj
+            )
+        )
+        (call load_policy.dontaudit_audit_access_files
+            (
+                subj
+            )
+        )
+        (call policy.config.read_files
+            (
+                subj
+            )
+        )
+        (call policy.config.relabel_files
+            (
+                subj
+            )
+        )
+        (call policy.store.read_files
+            (
+                subj
+            )
+        )
+
+        (call ibac_obj_id_change_exemption_subj_type
+            (
+                subj
+            )
+        )
+
+        (call rbac_obj_role_change_exemption_subj_type
+            (
+                subj
+            )
+        )
+
+        (call sys.audit_client
+            (
+                subj
+            )
+        )
+        (call sys.cpu_sysfs.read
+            (
+                subj
+            )
+        )
+        (call sys.fs_sysctl.read_files
+            (
+                subj
+            )
+        )
+        (call sys.invalid.read
+            (
+                subj
+            )
+        )
+        (call sys.invalid.relabelfrom
+            (
+                subj
+            )
+        )
+        (call sys.memory_sysfs.read
+            (
+                subj
+            )
+        )
+        (call sys.node_sysfs.read
+            (
+                subj
+            )
+        )
+        (call sys.unlabeled.read
+            (
+                subj
+            )
+        )
+        (call sys.unlabeled.relabelfrom
+            (
+                subj
+            )
+        )
+
+        (call cmd.generic_commands.execute
+            (
+                subj
+            )
+        )
+
+        (call dev.dev_file.relabelfrom_chr_files
+            (
+                subj
+            )
+        )
+
+        (call files.generic_config.read_files
+            (
+                subj
+            )
+        )
+        (call files.file.list
+            (
+                subj
+            )
+        )
+        (call files.file.read_lnk_files
+            (
+                subj
+            )
+        )
+        (call files.relabel_except
+            (
+                subj
+            )
+        )
+        (call files.tmpfs_file.delete
+            (
+                subj
+            )
+        )
+
+        (call fs.cgroup.read_files
+            (
+                subj
+            )
+        )
+        (call fs.devpts.write_inherited_chr_files
+            (
+                subj
+            )
+        )
+        (call fs.list
+            (
+                subj
+            )
+        )
+        (call fs.proc.read_files
+            (
+                subj
+            )
+        )
+        (call fs.read_lnk_files
+            (
+                subj
+            )
+        )
+        (call fs.relabel
+            (
+                subj
+            )
+        )
+        (call fs.tmpfs.delete_dirs
+            (
+                subj
+            )
+        )
+
+        (call sec.securityfs.read_files
+            (
+                subj
+            )
+        )
+        (call sec.validate_context
+            (
+                subj
+            )
+        )
+
+        (call term.console.rw_chr_files
+            (
+                subj
+            )
+        )
+
+        (call misc.passwd.read_files
+            (
+                subj
+            )
+        )
+        (call misc.shadow.relabel_files
+            (
+                subj
+            )
+        )
+
+        ;;(call nss.config.read_files
+        ;;    (
+        ;;        subj
+        ;;    )
+        ;;)
+
+        (call users.terminals.tty.rw_chr_files
+            (
+                subj
+            )
+        )
+
+        (optional setfiles_optional_journald
+            (call journald.client_subj_type
+                (
+                    subj
+                )
+            )
+        )
+
+        (optional setfiles_optional_systemd
+            (call systemd.forked_subj_type
+                (
+                    subj
+                )
+            )
+        )
+
+        ;
+        ; setfiles client policy
+        ;
+
+        (allow client_subj_type_attribute self
+            (process
+                (
+                    getsched
+                )
+            )
+        )
+
+        (call execute
+            (
+                client_subj_type_attribute
+            )
+        )
+
+        (call config.read_files
+            (
+                client_subj_type_attribute
+            )
+        )
+        (call file_context.read_files
+            (
+                client_subj_type_attribute
+            )
+        )
+
+        (call fs.getattr_fs
+            (
+                client_subj_type_attribute
+            )
+        )
+
+        ;
+        ; SEutils setfiles boot_flag name space
+        ;
+
+        (block boot_flag
+
+            ;
+            ; setfiles boot_flag contexts
+            ;
+
+            (filecon "/\.autorelabel" file boot_flag_file_context)
+
+            ;
+            ; setfiles boot_flag macros
+            ;
+
+            (macro rootfs_obj_type_transition ((type ARG1))
+                (call fs.rootfs.obj_type_transition
+                    (
+                        ARG1 boot_flag_file file ".autorelabel"
+                    )
+                )
+            )
+
+            ;
+            ; setfiles boot_flag policy
+            ;
+
+            (blockinherit files.boot_flag_file.obj_template)
+
+            (call manage_files
+                (
+                    subj
+                )
+            )
+            (call rootfs_obj_type_transition
+                (
+                    subj
+                )
+            )
+        )
+
+        ;
+        ; SEutils setfiles tmpfs name space
+        ;
+
+        (block tmpfs
+
+            ;
+            ; setfiles tmpfs macros
+            ;
+
+            (macro tmpfs_obj_type_transition ((type ARG1))
+                (call fs.tmpfs.obj_type_transition
+                    (
+                        ARG1 user_tmpfs_file file "*"
+                    )
+                )
+            )
+
+            ;
+            ; setfiles tmpfs policy
+            ;
+
+			(blockinherit users.user_tmpfs_file.obj_template)
+
+            (call manage_files
+                (
+                    subj
+                )
+            )
+            (call tmpfs_obj_type_transition
+                (
+                    subj
+                )
+            )
+        )
+    )
+
+    ;
+    ; SEutils setsebool name space
+    ;
+
+    (block setsebool
+
+        ;
+        ; setsebool contexts
+        ;
+
+        (filecon "/usr/sbin/setsebool" file cmd_file_context)
+
+        ;
+        ; setsebool macros
+        ;
+
+        (macro client_subj_type ((type ARG1))
+            (typeattributeset client_subj_type_attribute ARG1)
+        )
+
+        ;
+        ; setsebool policy
+        ;
+
+        (typeattribute client_subj_type_attribute)
+
+        (blockinherit user_agent_template)
+
+        (call client_subj_type
+            (
+                subj
+            )
+        )
+
+        (call config.manage_files
+            (
+                subj
+            )
+        )
+        (call file_context.manage_files
+            (
+                subj
+            )
+        )
+        (call load_policy.run
+            (
+                subj role_attribute
+            )
+        )
+        (call policy.config.manage_files
+            (
+                subj
+            )
+        )
+        (call policy.store.manage
+            (
+                subj
+            )
+        )
+        (call setfiles.run
+            (
+                subj role_attribute
+            )
+        )
+
+        (call cmd.generic_commands.execute
+            (
+                subj
+            )
+        )
+
+        (call files.generic_config.read
+            (
+                subj
+            )
+        )
+
+        (call sec.bool_file.set
+            (
+                subj
+            )
+        )
+
+        ;
+        ; setsebool client policy
+        ;
+
+        (call execute
+            (
+                client_subj_type_attribute
+            )
+        )
+
+        (call config.read_files
+            (
+                client_subj_type_attribute
+            )
+        )
+
+        (call sec.securityfs.list
+            (
+                client_subj_type_attribute
+            )
+        )
+
+        ;;(call nss.client_subj_type
+        ;;    (
+        ;;        client_subj_type_attribute
+        ;;    )
+        ;;)
+
+        (optional setsebool_optional_journald
+            (call journald.client_subj_type
+                (
+                    client_subj_type_attribute
+                )
+            )
+        )
+    )
+)

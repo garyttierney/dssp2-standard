@@ -473,26 +473,26 @@
                 )
             )
 
-            ;;(call seutils.config.read_files
-            ;;    (
-            ;;        subj_type_attribute
-            ;;    )
-            ;;)
-            ;;(call seutils.default_context.read_files
-            ;;    (
-            ;;        subj_type_attribute
-            ;;    )
-            ;;)
-            ;;(call seutils.file_context.read_files
-            ;;    (
-            ;;        subj_type_attribute
-            ;;    )
-            ;;)
-            ;;(call seutils.setfiles.execute
-            ;;    (
-            ;;        subj_type_attribute
-            ;;    )
-            ;;)
+            (call seutils.config.read_files
+                (
+                    subj_type_attribute
+                )
+            )
+            (call seutils.default_context.read_files
+                (
+                    subj_type_attribute
+                )
+            )
+            (call seutils.file_context.read_files
+                (
+                    subj_type_attribute
+                )
+            )
+            (call seutils.setfiles.execute
+                (
+                    subj_type_attribute
+                )
+            )
 
             (optional common_login_user_optional_mcstransd
                 (call mcstransd.contains
