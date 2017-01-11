@@ -227,4 +227,181 @@
             )
         )
     )
+
+    (optional sys_optional_mount
+        (call mount.generic_runtime_obj_type_transition
+            (
+                isid
+            )
+        )
+    )
+
+    (optional sys_optional_users
+        (call users.home_dir.home_obj_type_transition
+            (
+                isid
+            )
+        )
+        (call users.mail_spool.generic_var_spool_obj_type_transition
+            (
+                isid
+            )
+        )
+
+        (call users.generic_cache.home_dir_obj_type_transition
+            (
+                isid
+            )
+        )
+
+        (call users.generic_config.home_dir_obj_type_transition
+            (
+                isid
+            )
+        )
+
+        (call users.generic_data.home_dir_obj_type_transition
+            (
+                isid
+            )
+        )
+
+        (call users.generic_home.home_dir_obj_type_transition
+            (
+                isid dir "*"
+            )
+        )
+        (call users.generic_home.home_dir_obj_type_transition
+            (
+                isid fifo_file "*"
+            )
+        )
+        (call users.generic_home.home_dir_obj_type_transition
+            (
+                isid file "*"
+            )
+        )
+        (call users.generic_home.home_dir_obj_type_transition
+            (
+                isid lnk_file "*"
+            )
+        )
+        (call users.generic_home.home_dir_obj_type_transition
+            (
+                isid sock_file "*"
+            )
+        )
+
+        (call users.generic_tmp.generic_var_tmp_obj_type_transition
+            (
+                isid dir "*"
+            )
+        )
+        (call users.generic_tmp.generic_var_tmp_obj_type_transition
+            (
+                isid fifo_file "*"
+            )
+        )
+        (call users.generic_tmp.generic_var_tmp_obj_type_transition
+            (
+                isid file "*"
+            )
+        )
+        (call users.generic_tmp.generic_var_tmp_obj_type_transition
+            (
+                isid lnk_file "*"
+            )
+        )
+        (call users.generic_tmp.generic_var_tmp_obj_type_transition
+            (
+                isid sock_file "*"
+            )
+        )
+
+        (call users.generic_tmpfs.tmpfs_obj_type_transition
+            (
+                isid dir "*"
+            )
+        )
+        (call users.generic_tmpfs.tmpfs_obj_type_transition
+            (
+                isid fifo_file "*"
+            )
+        )
+        (call users.generic_tmpfs.tmpfs_obj_type_transition
+            (
+                isid file "*"
+            )
+        )
+        (call users.generic_tmpfs.tmpfs_obj_type_transition
+            (
+                isid lnk_file "*"
+            )
+        )
+        (call users.generic_tmpfs.tmpfs_obj_type_transition
+            (
+                isid sock_file "*"
+            )
+        )
+
+        (call users.home_cert.home_dir_obj_type_transition
+            (
+                isid
+            )
+        )
+
+        (call users.home_commands.generic_data_obj_type_transition
+            (
+                isid
+            )
+        )
+
+        (call users.home_font.cache.generic_cache_obj_type_transition
+            (
+                isid
+            )
+        )
+
+        (call users.home_font.cache.home_dir_obj_type_transition
+            (
+                isid
+            )
+        )
+
+        (call users.home_font.config.generic_config_obj_type_transition
+            (
+                isid
+            )
+        )
+
+        (call users.home_font.config.home_dir_obj_type_transition
+            (
+                isid
+            )
+        )
+
+        (call users.home_font.data.generic_data_obj_type_transition
+            (
+                isid
+            )
+        )
+
+        (call users.home_font.data.home_dir_obj_type_transition
+            (
+                isid
+            )
+        )
+
+        (call users.home_history.home_dir_obj_type_transition
+            (
+                isid
+            )
+        )
+
+        (call users.home_shellrc.home_dir_obj_type_transition
+            (
+                isid
+            )
+        )
+    )
 )
