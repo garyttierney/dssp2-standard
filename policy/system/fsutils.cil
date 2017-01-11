@@ -122,7 +122,7 @@
         )
     )
 
-    (call dev.random.read__chr_files
+    (call dev.random.read_chr_files
         (
             subj
         )

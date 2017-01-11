@@ -146,7 +146,7 @@
         )
     )
 
-    (optional sys_optional_fsutils
+    (optional testuser_optional_fsutils
         (call fsutils.runtime.generic_runtime_obj_type_transition
             (
                 subj
