@@ -196,6 +196,11 @@
     )
 
     (optional sys_optional_fsutils
+        (call fsutils.boot_flag.rootfs_obj_type_transition
+            (
+                isid
+            )
+        )
         (call fsutils.runtime.generic_runtime_obj_type_transition
             (
                 isid

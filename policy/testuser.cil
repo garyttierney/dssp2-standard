@@ -147,6 +147,11 @@
     )
 
     (optional testuser_optional_fsutils
+        (call fsutils.boot_flag.rootfs_obj_type_transition
+            (
+                subj
+            )
+        )
         (call fsutils.runtime.generic_runtime_obj_type_transition
             (
                 subj
