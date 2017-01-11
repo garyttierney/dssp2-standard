@@ -1,5 +1,15 @@
 ; -*- mode: CIL; fill-column: 75; indent-tabs-mode: nil; tab-width: 4 -*-
 
+; Mount policy
+;
+; 1. Mount name space
+;       Mount mount_any_file name space
+;       Mount runtime name space
+
+;
+; Mount name space
+;
+
 (block mount
 
     ;
@@ -162,6 +172,10 @@
         )
     )
 
+    ;
+    ; Mount mount_any_file name space
+    ;
+
     (block mount_any_file
 
         ;
@@ -192,6 +206,10 @@
             )
         )
     )
+
+    ;
+    ; Mount runtime name space
+    ;
 
     (block runtime
 

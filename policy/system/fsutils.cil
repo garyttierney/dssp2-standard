@@ -1,0 +1,357 @@
+; -*- mode: CIL; fill-column: 75; indent-tabs-mode: nil; tab-width: 4 -*-
+
+; FSutils policy
+;
+; 1. FSutils name space
+;       FSutils runtime name space
+
+;
+; FSutils name space
+;
+
+(block fsutils
+
+    ;
+    ; Contexts
+    ;
+
+    (filecon "/usr/bin/ntfsck" file cmd_file_context)
+    (filecon "/usr/bin/partition_uuid" file cmd_file_context)
+    (filecon "/usr/bin/raw" file cmd_file_context)
+    (filecon "/usr/bin/scsi_unique_id" file cmd_file_context)
+    (filecon "/usr/bin/syslinux" file cmd_file_context)
+    (filecon "/usr/sbin/badblocks" file cmd_file_context)
+    (filecon "/usr/sbin/blkactivate" file cmd_file_context)
+    (filecon "/usr/sbin/blkid" file cmd_file_context)
+    (filecon "/usr/sbin/blockdev" file cmd_file_context)
+    (filecon "/usr/sbin/cfdisk" file cmd_file_context)
+    (filecon "/usr/sbin/cgdisk" file cmd_file_context)
+    (filecon "/usr/sbin/clubufflush" file cmd_file_context)
+    (filecon "/usr/sbin/dosfsck" file cmd_file_context)
+    (filecon "/usr/sbin/dumpe2fs" file cmd_file_context)
+    (filecon "/usr/sbin/dump" file cmd_file_context)
+    (filecon "/usr/sbin/e2fsck" file cmd_file_context)
+    (filecon "/usr/sbin/e2label" file cmd_file_context)
+    (filecon "/usr/sbin/e4fsck" file cmd_file_context)
+    (filecon "/usr/sbin/fdisk" file cmd_file_context)
+    (filecon "/usr/sbin/findfs" file cmd_file_context)
+    (filecon "/usr/sbin/fixparts" file cmd_file_context)
+    (filecon "/usr/sbin/fsadm" file cmd_file_context)
+    (filecon "/usr/sbin/fsck.*" file cmd_file_context)
+    (filecon "/usr/sbin/gdisk" file cmd_file_context)
+    (filecon "/usr/sbin/hdparm" file cmd_file_context)
+    (filecon "/usr/sbin/install-mbr" file cmd_file_context)
+    (filecon "/usr/sbin/jfs_.*" file cmd_file_context)
+    (filecon "/usr/sbin/kpartx" file cmd_file_context)
+    (filecon "/usr/sbin/losetup.*" file cmd_file_context)
+    (filecon "/usr/sbin/lsraid" file cmd_file_context)
+    (filecon "/usr/sbin/make_reiser4" file cmd_file_context)
+    (filecon "/usr/sbin/mkdosfs" file cmd_file_context)
+    (filecon "/usr/sbin/mke2fs" file cmd_file_context)
+    (filecon "/usr/sbin/mke4fs" file cmd_file_context)
+    (filecon "/usr/sbin/mkfs.*" file cmd_file_context)
+    (filecon "/usr/sbin/mkraid" file cmd_file_context)
+    (filecon "/usr/sbin/mkreiserfs" file cmd_file_context)
+    (filecon "/usr/sbin/mkswap" file cmd_file_context)
+    (filecon "/usr/sbin/parted" file cmd_file_context)
+    (filecon "/usr/sbin/partprobe" file cmd_file_context)
+    (filecon "/usr/sbin/partx" file cmd_file_context)
+    (filecon "/usr/sbin/raidautorun" file cmd_file_context)
+    (filecon "/usr/sbin/raidstart" file cmd_file_context)
+    (filecon "/usr/sbin/reiserfs(ck|tune)" file cmd_file_context)
+    (filecon "/usr/sbin/resize.*fs" file cmd_file_context)
+    (filecon "/usr/sbin/scsi_info" file cmd_file_context)
+    (filecon "/usr/sbin/sfdisk" file cmd_file_context)
+    (filecon "/usr/sbin/sgdisk" file cmd_file_context)
+    (filecon "/usr/sbin/swapoff" file cmd_file_context)
+    (filecon "/usr/sbin/swapon.*" file cmd_file_context)
+    (filecon "/usr/sbin/tune2fs" file cmd_file_context)
+    (filecon "/usr/sbin/xfs_.*" file cmd_file_context)
+
+    ;
+    ; Macros
+    ;
+
+    (macro use_fd ((type ARG1))
+        (allow ARG1 subj
+            (fd
+                (
+                    use
+                )
+            )
+        )
+    )
+
+    ;
+    ; Policy
+    ;
+
+    (blockinherit hybrid_agent_template)
+
+    (dontaudit subj self
+        (capability
+            (
+                dac_override
+            )
+        )
+    )
+    (allow subj self
+        (capability
+            (
+                dac_read_search
+                sys_admin
+                sys_rawio
+            )
+        )
+    )
+
+    (call execute
+        (
+            subj
+        )
+    )
+
+    (call sys.get_sysvipc_info
+        (
+            subj
+        )
+    )
+    (call sys.request_load_kernel_module
+        (
+            subj
+        )
+    )
+
+    (call dev.random.read__chr_files
+        (
+            subj
+        )
+    )
+    (call dev.urandom.read_chr_files
+        (
+            subj
+        )
+    )
+    (call dev.loop_control.rw_chr_files
+        (
+            subj
+        )
+    )
+    (call dev.lvm_control.rw_chr_files
+        (
+            subj
+        )
+    )
+
+    (call files.generic_boot_flag.manage_files
+        (
+            subj
+        )
+    )
+    (call files.generic_boot_flag.rootfs_obj_type_transition
+        (
+            subj
+        )
+    )
+    (call files.generic_config.read
+        (
+            subj
+        )
+    )
+    (call files.generic_data.read_files
+        (
+            subj
+        )
+    )
+    (call files.lost_found.manage
+        (
+            subj
+        )
+    )
+    (call files.lost_found.mountpoint_obj_type_transition
+        (
+            subj
+        )
+    )
+
+    (call fs.devtmpfs.list
+        (
+            subj
+        )
+    )
+    (call fs.devtmpfs.read_lnk_files
+        (
+            subj
+        )
+    )
+    (call fs.proc.read_files
+        (
+            subj
+        )
+    )
+    (call fs.sysfs.read
+        (
+            subj
+        )
+    )
+
+    (call sec.set_fscreate_subj_type
+        (
+            subj
+        )
+    )
+
+    (call stor.fixed_disk.devtmpfs_obj_type_transition
+        (
+            subj
+        )
+    )
+    (call stor.removable.devtmpfs_obj_type_transition
+        (
+            subj
+        )
+    )
+    (call stor.scsi_generic.devtmpfs_obj_type_transition
+        (
+            subj
+        )
+    )
+    (call stor.stor_file.manage
+        (
+            subj
+        )
+    )
+
+    (call misc.fstab.read_files
+        (
+            subj
+        )
+    )
+    (call misc.terminfo.client_subj_type
+        (
+            subj
+        )
+    )
+
+    (call mount.runtime.manage
+        (
+            subj
+        )
+    )
+    (call mount.runtime.generic_runtime_obj_type_transition
+        (
+            subj
+        )
+    )
+
+    ;;(call nss.client_subj_type
+    ;;    (
+    ;;        subj
+    ;;    )
+    ;;)
+
+    ;;(call seutils.config.read_files
+    ;;    (
+    ;;        subj
+    ;;    )
+    ;;)
+    ;;(call seutils.default_context.read_files
+    ;;    (
+    ;;        subj
+    ;;    )
+    ;;)
+    ;;(call seutils.file_context.read_files
+    ;;    (
+    ;;        subj
+    ;;    )
+    ;;)
+
+    ;;(call udev.client_subj_type
+    ;;    (
+    ;;        subj
+    ;;    )
+    ;;)
+
+    (optional fsutils_optional_machined
+        (call machined.var_lib.rw_files
+            (
+                subj
+            )
+        )
+    )
+
+    (optional fsutils_optional_mount
+        (booleanif mount.mount_any_file
+            (true
+                (call files.rw_except
+                    (
+                        subj
+                    )
+                )
+            )
+        )
+    )
+
+    (optional fsutils_optional_sd_fsck
+        (call sd_fsck.runtime.manage
+            (
+                subj
+            )
+        )
+        (call sd_fsck.runtime.systemd_runtime_obj_type_transition
+            (
+                subj
+            )
+        )
+    )
+
+    (optional fsutils_optional_systemd
+        (call systemd.daemon
+            (
+                subj cmd_file
+            )
+        )
+    )
+
+    ;
+    ; FSutils runtime name space
+    ;
+
+    (block runtime
+
+        ;
+        ; runtime contexts
+        ;
+
+        (filecon "/run/blkid(/.*)?" any runtime_file_context)
+
+        ;
+        ; runtime macros
+        ;
+
+        (macro generic_runtime_obj_type_transition ((type ARG1))
+            (call files.generic_runtime.obj_type_transition
+                (
+                    ARG1 runtime_file dir "blkid"
+                )
+            )
+        )
+
+        ;
+        ; runtime policy
+        ;
+
+        (blockinherit files.runtime_file.obj_template)
+
+        (call manage
+            (
+                subj
+            )
+        )
+        (call generic_runtime_obj_type_transition
+            (
+                subj
+            )
+        )
+    )
+)
