@@ -69,20 +69,6 @@
     (filecon "/usr/sbin/xfs_.*" file cmd_file_context)
 
     ;
-    ; Macros
-    ;
-
-    (macro use_fd ((type ARG1))
-        (allow ARG1 subj
-            (fd
-                (
-                    use
-                )
-            )
-        )
-    )
-
-    ;
     ; Policy
     ;
 
