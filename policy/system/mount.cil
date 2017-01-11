@@ -1,0 +1,200 @@
+; -*- mode: CIL; fill-column: 75; indent-tabs-mode: nil; tab-width: 4 -*-
+
+(block mount
+
+    ;
+    ; Contexts
+    ;
+
+    (filecon "/usr/bin/mount.*" file cmd_file_context)
+    (filecon "/usr/bin/umount.*" file cmd_file_context)
+    (filecon "/usr/sbin/mount.*" file cmd_file_context)
+    (filecon "/usr/sbin/umount.*" file cmd_file_context)
+
+    ;
+    ; Policy
+    ;
+
+    (blockinherit hybrid_agent_template)
+
+    (dontaudit subj self
+        (capability
+            (
+                dac_override
+            )
+        )
+    )
+    (allow subj self
+        (capability
+            (
+                dac_read_search
+                fowner
+                sys_admin
+                sys_rawio
+            )
+        )
+    )
+
+    (call sys.mountpoint.dontaudit_audit_access_dirs
+        (
+            subj
+        )
+    )
+    (call sys.mountpoint.list
+        (
+            subj
+        )
+    )
+    (call sys.mountpoint.mounton_dirs
+        (
+            subj
+        )
+    )
+    (call sys.mountpoint.setattr_dirs
+        (
+            subj
+        )
+    )
+    (call sys.request_load_kernel_module
+        (
+            subj
+        )
+    )
+    (call sys.setsched
+        (
+            subj
+        )
+    )
+    (call sys.unlabeled.dontaudit_audit_access_dirs
+        (
+            subj
+        )
+    )
+    (call sys.unlabeled.dontaudit_setattr_dirs
+        (
+            subj
+        )
+    )
+
+    (call dev.loop_control.rw_chr_files
+        (
+            subj
+        )
+    )
+
+    (call files.generic_config.read_files
+        (
+            subj
+        )
+    )
+
+    (call fs.debugfs.list
+        (
+            subj
+        )
+    )
+    (call fs.devtmpfs.read_lnk_files
+        (
+            subj
+        )
+    )
+    (call fs.getattr_fs
+        (
+            subj
+        )
+    )
+    (call fs.mount
+        (
+            subj
+        )
+    )
+    (call fs.remount
+        (
+            subj
+        )
+    )
+    (call fs.sysfs.read
+        (
+            subj
+        )
+    )
+    (call fs.unmount
+        (
+            subj
+        )
+    )
+
+    (call stor.stor_file.rw
+        (
+            subj
+        )
+    )
+
+    (call misc.fstab.read_files
+        (
+            subj
+        )
+    )
+
+    (optional mount_optional_iputils
+        (call iputils.runtime.read
+            (
+                subj
+            )
+        )
+    )
+
+    (optional mount_optional_machined
+        (call machined.var_lib.rw_files
+            (
+                subj
+            )
+        )
+    )
+
+    (optional mount_optional_systemd
+        (call systemd.daemon
+            (
+                subj cmd_file
+            )
+        )
+    )
+
+    (block runtime
+
+        ;
+        ; runtime contexts
+        ;
+
+        (filecon "/run/mount(/.*)?" any runtime_file_context)
+
+        ;
+        ; runtime macros
+        ;
+
+        (macro generic_runtime_obj_type_transition ((type ARG1))
+            (call files.generic_runtime.obj_type_transition
+                (
+                    ARG1 runtime_file dir "mount"
+                )
+            )
+        )
+
+        ;
+        ; runtime policy
+        ;
+
+        (blockinherit files.runtime_file.obj_template)
+
+        (call manage
+            (
+                subj
+            )
+        )
+        (call generic_runtime_obj_type_transition
+            (
+                subj
+            )
+        )
+    )
+)
