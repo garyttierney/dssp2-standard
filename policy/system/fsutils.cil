@@ -278,6 +278,14 @@
         )
     )
 
+    (optional fsutils_optional_rpm
+        (call rpm.script.client_subj_type
+            (
+                ARG1
+            )
+        )
+    )
+
     (optional fsutils_optional_sd_fsck
         (call sd_fsck.runtime.manage
             (
