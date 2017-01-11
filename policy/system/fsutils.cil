@@ -3,6 +3,7 @@
 ; FSutils policy
 ;
 ; 1. FSutils name space
+;       FSutils boot_flag name space
 ;       FSutils runtime name space
 
 ;
@@ -129,16 +130,6 @@
         )
     )
 
-    (call files.generic_boot_flag.manage_files
-        (
-            subj
-        )
-    )
-    (call files.generic_boot_flag.rootfs_obj_type_transition
-        (
-            subj
-        )
-    )
     (call files.generic_config.read
         (
             subj
@@ -303,6 +294,48 @@
         (call systemd.daemon
             (
                 subj cmd_file
+            )
+        )
+    )
+
+    ;
+    ; FSutils boot_flag name space
+    ;
+
+    (block boot_flag
+
+        ;
+        ; boot_flag contexts
+        ;
+
+        (filecon "/\.ismount-test-file" file boot_flag_file_context)
+
+        ;
+        ; boot_flag macros
+        ;
+
+        (macro rootfs_obj_type_transition ((type ARG1))
+            (call fs.rootfs.obj_type_transition
+                (
+                    ARG1 boot_flag_file file ".ismount-test-file"
+                )
+            )
+        )
+
+        ;
+        ; boot_flag policy
+        ;
+
+        (blockinherit files.boot_flag_file.obj_template)
+
+        (call manage_files
+            (
+                subj
+            )
+        )
+        (call rootfs_obj_type_transition
+            (
+                subj
             )
         )
     )
