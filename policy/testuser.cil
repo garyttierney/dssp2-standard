@@ -180,7 +180,7 @@
     )
 
     (optional testuser_optional_mount
-        (call mount.generic_runtime_obj_type_transition
+        (call mount.runtime.generic_runtime_obj_type_transition
             (
                 subj
             )
