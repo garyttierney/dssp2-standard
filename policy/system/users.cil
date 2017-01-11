@@ -390,12 +390,12 @@
                 )
             )
 
-            (call users.terminals.pty.user_pty
+            (call users.terminals.pty.login_pty
                 (
                     subj_type_attribute
                 )
             )
-            (call users.terminals.tty.user_tty
+            (call users.terminals.tty.login_tty
                 (
                     subj_type_attribute
                 )
@@ -16843,8 +16843,8 @@
                 )
             )
 
-            (macro user_pty ((type ARG1))
-                (call term.login_pty_file.user_pty
+            (macro login_pty ((type ARG1))
+                (call term.login_pty_file.login_pty
                     (
                         ARG1 pty_file
                     )
@@ -16878,8 +16878,8 @@
                 (dontaudit ARG1 serial_file relabelfrom_chr_file_perms)
             )
 
-            (macro user_tty ((type ARG1))
-                (call term.generic_serial.user_tty
+            (macro login_tty ((type ARG1))
+                (call term.generic_serial.login_tty
                     (
                         ARG1 serial_file
                     )
