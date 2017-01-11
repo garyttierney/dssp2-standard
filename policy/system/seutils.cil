@@ -92,9 +92,6 @@
         ;
 
         (filecon "/etc/selinux(/.*)?" any config_file_context)
-        (filecon "/etc/selinux/([^/]*/)?seusers" file config_file_context)
-        (filecon "/etc/selinux/([^/]*/)?users(/.*)?" file
-            config_file_context)
 
         ;
         ; config macros
