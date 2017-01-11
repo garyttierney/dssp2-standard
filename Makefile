@@ -66,7 +66,7 @@ $(POLICY_VERSION): $(BASE_POLICY_SOURCES) $(STANDARD_POLICY_SOURCES)
 	$(SECILC) --policyvers=$(POLICY_VERSION) --o="$@" $^
 
 policy.%: $(BASE_POLICY_SOURCES) $(STANDARD_POLICY_SOURCES)
-	$(SECILC) --policyvers=$* --o="$@" $^
+	$(SECILC) -v --policyvers=$* --o="$@" $^
 
 install-config: $(POLICY_CONFIG_SOURCES)
 	$(MKDIR) -p $(DESTDIR)/$(SYSCONFDIR)/selinux/$(POLICY_NAME)/contexts/files
