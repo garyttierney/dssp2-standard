@@ -1,0 +1,95 @@
+; -*- mode: CIL; fill-column: 75; indent-tabs-mode: nil; tab-width: 4 -*-
+
+(block chkpwd
+
+    ;
+    ; Contexts
+    ;
+
+    (filecon "/usr/sbin/unix_chkpwd" file cmd_file_context)
+
+    ;
+    ; Policy
+    ;
+
+    (blockinherit hybrid_agent_template)
+
+    (dontaudit subj self
+        (capability
+            (
+                dac_override
+            )
+        )
+    )
+    (allow subj self
+        (capability
+            (
+                dac_read_search
+                setuid
+            )
+        )
+    )
+
+    (call sys.audit_client
+        (
+            subj
+        )
+    )
+	(call sys.crypto_sysctl.read_files
+        (
+            subj
+        )
+    )
+
+    (call term.console.dontaudit_rw_chr_files
+        (
+            subj
+        )
+    )
+    (call term.generic_serial.dontaudit_rw_chr_files
+        (
+            subj
+        )
+    )
+
+    (call misc.shadow.read_files
+        (
+            subj
+        )
+    )
+
+    ;;(call nss.client_subj_type
+    ;;    (
+    ;;        subj
+    ;;    )
+    ;;)
+
+    (optional chkpwd_optional_journald
+        (call journald.client_subj_type
+            (
+                subj
+            )
+        )
+    )
+
+    (optional chkpwd_optional_machined
+        (call machined.pty.dontaudit_rw_chr_files
+            (
+                subj
+            )
+        )
+    )
+
+    (optional chkpwd_optional_systemd
+        (call systemd.rw_inherited_fifo_files
+            (
+                subj
+            )
+        )
+        (call systemd.daemon
+            (
+                subj cmd_file
+            )
+        )
+    )
+)
