@@ -159,6 +159,14 @@
         )
     )
 
+    (optional testuser_optional_hostname
+        (call hostname.config.generic_config_obj_type_transition
+            (
+                subj
+            )
+        )
+    )
+
     (optional testuser_optional_miscfiles
         (call misc.fstab.control_client_subj_type
             (

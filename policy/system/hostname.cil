@@ -1,0 +1,83 @@
+; -*- mode: CIL; fill-column: 75; indent-tabs-mode: nil; tab-width: 4 -*-
+
+; Hostname policy
+;
+; 1. Hostname name space
+;       Hostname config name space
+
+;
+; Hostname name space
+;
+
+(block hostname
+
+    ;
+    ; Contexts
+    ;
+
+    (filecon "/usr/bin/hostname" file cmd_file_context)
+
+    ;
+    ; Policy
+    ;
+
+    (blockinherit hybrid_agent_template)
+
+    (call sys.net_proc.read_files
+        (
+            subj
+        )
+    )
+
+    ;;(call nss.client_subj_type
+    ;;    (
+    ;;        subj
+    ;;    )
+    ;;)
+
+    (optional hostname_optional_systemd
+        (call systemd.daemon
+            (
+                subj cmd_file
+            )
+        )
+    )
+
+    ;
+    ; Hostname config name space
+    ;
+
+    (block config
+
+        ;
+        ; config contexts
+        ;
+
+        (filecon "/etc/hostname" file config_file_context)
+        (filecon "/etc/hostname\..*" file config_file_context)
+
+        ;
+        ; config macros
+        ;
+
+        (macro generic_config_obj_type_transition ((type ARG1))
+            (call files.generic_config.obj_type_transition
+                (
+                    ARG1 config_file file "hostname"
+                )
+            )
+        )
+
+        ;
+        ; config policy
+        ;
+
+        (blockinherit files.config_file.obj_template)
+
+        (call read_files
+            (
+                subj
+            )
+        )
+    )
+)

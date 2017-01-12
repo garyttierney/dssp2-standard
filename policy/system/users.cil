@@ -456,11 +456,11 @@
                 )
             )
 
-            ;;(call hostname.execute
-            ;;    (
-            ;;        subj_type_attribute
-            ;;    )
-            ;;)
+            (call hostname.execute
+                (
+                    subj_type_attribute
+                )
+            )
 
             (call misc.font.client_subj_type
                 (
