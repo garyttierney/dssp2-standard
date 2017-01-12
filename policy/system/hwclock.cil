@@ -1,0 +1,98 @@
+; -*- mode: CIL; fill-column: 75; indent-tabs-mode: nil; tab-width: 4 -*-
+
+; HWclock policy
+;
+; 1. HWclock name space
+;       HWclock config name space
+
+;
+; HWclock name space
+;
+
+(block hwclock
+
+    ;
+    ; Contexts
+    ;
+
+	(filecon "/usr/sbin/hwclock" file cmd_file_context)
+
+    ;
+    ; Policy
+    ;
+
+    (blockinherit hybrid_agent_template)
+
+    (allow subj self
+        (capability
+            (
+                sys_time
+            )
+        )
+    )
+
+    (call sys.audit_client
+        (
+            subj
+        )
+    )
+
+    (call dev.clock.read_chr_files
+        (
+            subj
+        )
+    )
+
+    (call fs.devtmpfs.read_lnk_files
+        (
+            subj
+        )
+    )
+
+    (optional hwclock_optional_systemd
+        (call systemd.daemon
+            (
+                subj cmd_file
+            )
+        )
+    )
+
+    ;
+    ; HWclock config name space
+    ;
+
+    (block config
+
+        ;
+        ; config contexts
+        ;
+
+
+        (filecon "/etc/adjtime" file config_file_context)
+        (filecon "/etc/adjtime\..*" file config_file_context)
+
+        ;
+        ; config macros
+        ;
+
+        (macro generic_config_obj_type_transition ((type ARG1))
+            (call files.generic_config.obj_type_transition
+                (
+                    ARG1 config_file file "adjtime"
+                )
+            )
+        )
+
+        ;
+        ; config policy
+        ;
+
+        (blockinherit files.config_file.obj_template)
+
+        (call read_files
+            (
+                subj
+            )
+        )
+    )
+)

@@ -216,6 +216,14 @@
         )
     )
 
+    (optional sys_optional_hwclock
+        (call hwclock.config.generic_config_obj_type_transition
+            (
+                isid
+            )
+        )
+    )
+
     (optional sys_optional_miscfiles
         (call misc.fstab.control_client_subj_type
             (
