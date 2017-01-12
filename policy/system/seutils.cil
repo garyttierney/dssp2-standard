@@ -1524,7 +1524,7 @@
         )
 
         (optional load_policy_optional_systemd
-            (call systemd.forked_subj_type
+            (call systemd.forked.subj_type
                 (
                     subj
                 )
@@ -2690,7 +2690,7 @@
         )
 
         (optional setfiles_optional_systemd
-            (call systemd.forked_subj_type
+            (call systemd.forked.subj_type
                 (
                     subj
                 )

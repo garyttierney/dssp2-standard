@@ -1,0 +1,206 @@
+; -*- mode: CIL; fill-column: 75; indent-tabs-mode: nil; tab-width: 4 -*-
+
+; IPutils policy
+;
+; 1. IPutils name space
+;       IPutils config name space
+;       IPutils runtime name space
+
+;
+; IPutils name space
+;
+
+(block iputils
+
+    ;
+    ; Contexts
+    ;
+
+    (filecon "/usr/sbin/ethtool" file cmd_file_context)
+    (filecon "/usr/sbin/ifconfig" file cmd_file_context)
+    (filecon "/usr/sbin/ip" file cmd_file_context)
+    (filecon "/usr/sbin/iw" file cmd_file_context)
+    (filecon "/usr/sbin/iwconfig" file cmd_file_context)
+    (filecon "/usr/sbin/iwpriv" file cmd_file_context)
+    (filecon "/usr/sbin/route" file cmd_file_context)
+    (filecon "/usr/sbin/tc" file cmd_file_context)
+
+    ;
+    ; Policy
+    ;
+
+    (blockinherit hybrid_agent_template)
+
+    (allow subj self
+        (capability
+            (
+                net_admin
+                sys_admin
+            )
+        )
+    )
+    (allow subj self create_netlink_generic_socket_perms)
+    (allow subj self create_netlink_route_socket_perms)
+    (allow subj self create_udp_socket_perms)
+    (allow subj self create_unix_dgram_socket_perms)
+
+    (call sys.load_kernel_module_subj_type
+        (
+            subj
+        )
+    )
+    (call sys.net_proc.read_files
+        (
+            subj
+        )
+    )
+    (call sys.net_sysctl.read_files
+        (
+            subj
+        )
+    )
+    (call sys.request_load_kernel_module
+        (
+            subj
+        )
+    )
+
+    (call files.generic_config.read_files
+        (
+            subj
+        )
+    )
+    (call files.generic_modules.load
+        (
+            subj
+        )
+    )
+    (call files.generic_modules.read
+        (
+            subj
+        )
+    )
+
+    (call fs.nsfs.read
+        (
+            subj
+        )
+    )
+    (call fs.nsfs.unmount
+        (
+            subj
+        )
+    )
+
+
+    ;;(call nss.client_subj_type
+    ;;    (
+    ;;        subj
+    ;;    )
+    ;;)
+
+    (optional iputils_optional_systemd
+        (call systemd.forked.subj_type
+            (
+                subj
+            )
+        )
+    )
+
+    ;
+    ; IPutils config name space
+    ;
+
+    (block config
+
+        ;
+        ; config contexts
+        ;
+
+        (filecon "/etc/iproute2(/.*)?" any config_file_context)
+
+        ;
+        ; config policy
+        ;
+
+        (blockinherit files.config_file.obj_template)
+
+        (call read
+            (
+                subj
+            )
+        )
+    )
+
+    ;
+    ; IPutils runtime name space
+    ;
+
+    (block runtime
+
+        ;
+        ; runtime contexts
+        ;
+
+        (filecon "/run/netns(/.*)?" any runtime_file_context)
+
+        ;
+        ; runtime macros
+        ;
+
+        (macro generic_runtime_obj_type_transition ((type ARG1))
+            (call files.generic_runtime.obj_type_transition
+                (
+                    ARG1 runtime_file dir "netns"
+                )
+            )
+        )
+
+        (macro mounton_dirs ((type ARG1))
+            (allow ARG1 runtime_file
+                (dir
+                    (
+                        mounton
+                    )
+                )
+            )
+        )
+
+        (macro mounton_files ((type ARG1))
+            (allow ARG1 runtime_file
+                (file
+                    (
+                        mounton
+                    )
+                )
+            )
+        )
+
+        ;
+        ; runtime policy
+        ;
+
+        (blockinherit files.runtime_file.obj_template)
+
+        (call manage
+            (
+                subj
+            )
+        )
+        (call mounton_dirs
+            (
+                subj
+            )
+        )
+        (call mounton_files
+            (
+                subj
+            )
+        )
+        (call generic_runtime_obj_type_transition
+            (
+                subj
+            )
+        )
+    )
+)

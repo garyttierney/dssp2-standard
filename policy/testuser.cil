@@ -175,6 +175,14 @@
         )
     )
 
+    (optional testuser_optional_iputils
+        (call iputils.runtime.generic_runtime_obj_type_transition
+            (
+                subj
+            )
+        )
+    )
+
     (optional testuser_optional_miscfiles
         (call misc.fstab.control_client_subj_type
             (
