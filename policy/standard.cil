@@ -232,6 +232,14 @@
         )
     )
 
+    (optional sys_optional_kmod
+        (call kmod.module_dep.generic_modules_obj_type_transition
+            (
+                isid
+            )
+        )
+    )
+
     (optional sys_optional_miscfiles
         (call misc.fstab.control_client_subj_type
             (

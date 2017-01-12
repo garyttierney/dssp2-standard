@@ -1,0 +1,518 @@
+; -*- mode: CIL; fill-column: 75; indent-tabs-mode: nil; tab-width: 4 -*-
+
+; kmod policy
+;
+; 1. kmod name space
+;       kmod config name space
+;       kmod module_dep name space
+
+;
+; kmod name space
+;
+
+(block kmod
+
+    ;
+    ; Contexts
+    ;
+
+    (filecon "/usr/bin/kmod" file cmd_file_context)
+
+    ;
+    ; Policy
+    ;
+
+    (blockinherit hybrid_agent_template)
+
+    (dontaudit subj self
+        (capability
+            (
+                dac_override
+            )
+        )
+    )
+    (allow subj self
+        (capability
+            (
+                dac_read_search
+            )
+        )
+    )
+
+    (call sys.link_keyring
+        (
+            subj
+        )
+    )
+    (call sys.load_kernel_module_subj_type
+        (
+            subj
+        )
+    )
+    (call sys.request_load_kernel_module
+        (
+            subj
+        )
+    )
+
+    (call cmd.generic_commands.execute
+        (
+            subj
+        )
+    )
+    (call cmd.shell.execute
+        (
+            subj
+        )
+    )
+
+    (call files.generic_modules.list
+        (
+            subj
+        )
+    )
+    (call files.generic_modules.read_lnk_files
+        (
+            subj
+        )
+    )
+    (call files.modules_file.load
+        (
+            subj
+        )
+    )
+    (call files.modules_file.read_files
+        (
+            subj
+        )
+    )
+
+    (call fs.proc.read_files
+        (
+            subj
+        )
+    )
+    (call fs.sysfs.read
+        (
+            subj
+        )
+    )
+
+    ;;(call bootloader.boot.read_files
+    ;;    (
+    ;;        subj
+    ;;    )
+    ;;)
+
+    ;;(call nss.client_subj_type
+    ;;    (
+    ;;        subj
+    ;;    )
+    ;;)
+
+    (optional kmod_optional_rpm
+        (call rpm.script.client_subj_type
+            (
+                subj
+            )
+        )
+    )
+
+    (optional kmod_optional_systemd
+        (call systemd.daemon
+            (
+                subj cmd_file
+            )
+        )
+    )
+
+    (optional kmod_optional_tmpfiles
+        (call tmpfiles.runtime.manage_files
+            (
+                subj
+            )
+        )
+    )
+
+
+    ;
+    ; kmod config name space
+    ;
+
+    (block config
+
+        ;
+        ; config contexts
+        ;
+
+        (filecon "/etc/depmod\.d(/.*)?" any config_file_context)
+        (filecon "/etc/modprobe\.d(/.*)?" any config_file_context)
+
+        ;
+        ; config policy
+        ;
+
+        (blockinherit files.config_file.obj_template)
+
+        (call read
+            (
+                subj
+            )
+        )
+    )
+
+    ;
+    ; kmod module_dep name space
+    ;
+
+    (block module_dep
+
+        ;
+        ; module_dep contexts
+        ;
+
+        (filecon "/usr/lib/modules/[^/]+/modules\.alias" file file_context)
+        (filecon "/usr/lib/modules/[^/]+/modules\.alias\.tmp" file
+            file_context)
+        (filecon "/usr/lib/modules/[^/]+/modules\.alias\.bin" file
+            file_context)
+        (filecon "/usr/lib/modules/[^/]+/modules\.alias\.bin\.tmp" file
+            file_context)
+        (filecon "/usr/lib/modules/[^/]+/modules\.block" file file_context)
+        (filecon "/usr/lib/modules/[^/]+/modules\.builtin" file
+            file_context)
+        (filecon "/usr/lib/modules/[^/]+/modules\.builtin\.tmp" file
+            file_context)
+        (filecon "/usr/lib/modules/[^/]+/modules\.builtin\.bin" file
+            file_context)
+        (filecon "/usr/lib/modules/[^/]+/modules\.builtin\.bin\.tmp" file
+            file_context)
+        (filecon "/usr/lib/modules/[^/]+/modules\.dep" file file_context)
+        (filecon "/usr/lib/modules/[^/]+/modules\.dep\.tmp" file
+            file_context)
+        (filecon "/usr/lib/modules/[^/]+/modules\.dep\.bin" file
+            file_context)
+        (filecon "/usr/lib/modules/[^/]+/modules\.dep\.bin\.tmp" file
+            file_context)
+        (filecon "/usr/lib/modules/[^/]+/modules\.devname" file
+            file_context)
+        (filecon "/usr/lib/modules/[^/]+/modules\.devname\.tmp" file
+            file_context)
+        (filecon "/usr/lib/modules/[^/]+/modules\.drm" file file_context)
+        (filecon "/usr/lib/modules/[^/]+/modules\.modesetting" file
+            file_context)
+        (filecon "/usr/lib/modules/[^/]+/modules\.networking" file
+            file_context)
+        (filecon "/usr/lib/modules/[^/]+/modules\.order" file file_context)
+        (filecon "/usr/lib/modules/[^/]+/modules\.softdep" file
+            file_context)
+        (filecon "/usr/lib/modules/[^/]+/modules\.softdep\.tmp" file
+            file_context)
+        (filecon "/usr/lib/modules/[^/]+/modules\.symbols" file
+            file_context)
+        (filecon "/usr/lib/modules/[^/]+/modules\.symbols\.tmp" file
+            file_context)
+        (filecon "/usr/lib/modules/[^/]+/modules\.symbols\.bin" file
+            file_context)
+        (filecon "/usr/lib/modules/[^/]+/modules\.symbols\.bin\.tmp" file
+            file_context)
+
+        ;
+        ; module_dep macros
+        ;
+
+        (macro append_files ((type ARG1))
+            (allow ARG1 file append_file_perms)
+            (call files.generic_modules.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro create_files ((type ARG1))
+            (allow ARG1 file create_file_perms)
+            (call files.generic_modules.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro delete_files ((type ARG1))
+            (allow ARG1 file delete_file_perms)
+            (call files.generic_modules.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro execute ((type ARG1))
+            (allow ARG1 file exec_file_perms)
+            (call files.generic_modules.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro generic_modules_obj_type_transition ((type ARG1))
+            (call files.generic_modules.obj_type_transition
+                (
+                    ARG1 file file "modules.alias"
+                )
+            )
+            (call files.generic_modules.obj_type_transition
+                (
+                    ARG1 file file "modules.alias.tmp"
+                )
+            )
+            (call files.generic_modules.obj_type_transition
+                (
+                    ARG1 file file "modules.alias.bin"
+                )
+            )
+            (call files.generic_modules.obj_type_transition
+                (
+                    ARG1 file file "modules.alias.bin.tmp"
+                )
+            )
+            (call files.generic_modules.obj_type_transition
+                (
+                    ARG1 file file "modules.block"
+                )
+            )
+            (call files.generic_modules.obj_type_transition
+                (
+                    ARG1 file file "modules.builtin"
+                )
+            )
+            (call files.generic_modules.obj_type_transition
+                (
+                    ARG1 file file "modules.builtin.tmp"
+                )
+            )
+            (call files.generic_modules.obj_type_transition
+                (
+                    ARG1 file file "modules.builtin.bin"
+                )
+            )
+            (call files.generic_modules.obj_type_transition
+                (
+                    ARG1 file file "modules.builtin.bin.tmp"
+                )
+            )
+            (call files.generic_modules.obj_type_transition
+                (
+                    ARG1 file file "modules.dep"
+                )
+            )
+            (call files.generic_modules.obj_type_transition
+                (
+                    ARG1 file file "modules.dep.tmp"
+                )
+            )
+            (call files.generic_modules.obj_type_transition
+                (
+                    ARG1 file file "modules.dep.bin"
+                )
+            )
+            (call files.generic_modules.obj_type_transition
+                (
+                    ARG1 file file "modules.dep.bin.tmp"
+                )
+            )
+            (call files.generic_modules.obj_type_transition
+                (
+                    ARG1 file file "modules.devname"
+                )
+            )
+            (call files.generic_modules.obj_type_transition
+                (
+                    ARG1 file file "modules.devname.tmp"
+                )
+            )
+            (call files.generic_modules.obj_type_transition
+                (
+                    ARG1 file file "modules.drm"
+                )
+            )
+            (call files.generic_modules.obj_type_transition
+                (
+                    ARG1 file file "modules.modesetting"
+                )
+            )
+            (call files.generic_modules.obj_type_transition
+                (
+                    ARG1 file file "modules.networking"
+                )
+            )
+            (call files.generic_modules.obj_type_transition
+                (
+                    ARG1 file file "modules.order"
+                )
+            )
+            (call files.generic_modules.obj_type_transition
+                (
+                    ARG1 file file "modules.softdep"
+                )
+            )
+            (call files.generic_modules.obj_type_transition
+                (
+                    ARG1 file file "modules.softdep.tmp"
+                )
+            )
+            (call files.generic_modules.obj_type_transition
+                (
+                    ARG1 file file "modules.symbols"
+                )
+            )
+            (call files.generic_modules.obj_type_transition
+                (
+                    ARG1 file file "modules.symbols.tmp"
+                )
+            )
+            (call files.generic_modules.obj_type_transition
+                (
+                    ARG1 file file "modules.symbols.bin"
+                )
+            )
+            (call files.generic_modules.obj_type_transition
+                (
+                    ARG1 file file "modules.symbols.bin.tmp"
+                )
+            )
+        )
+
+        (macro getattr_files ((type ARG1))
+            (allow ARG1 file
+                (file
+                    (
+                        getattr
+                    )
+                )
+            )
+            (call files.generic_modules.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro manage_files ((type ARG1))
+            (allow ARG1 file manage_file_perms)
+            (call files.generic_modules.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro mmap ((type ARG1))
+            (allow ARG1 file mmap_file_perms)
+            (call files.generic_modules.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro read_files ((type ARG1))
+            (allow ARG1 file read_file_perms)
+            (call files.generic_modules.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro relabel_files ((type ARG1))
+            (allow ARG1 file relabel_file_perms)
+            (call files.generic_modules.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro relabelfrom_files ((type ARG1))
+            (allow ARG1 file relabelfrom_file_perms)
+            (call files.generic_modules.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro relabelto_files ((type ARG1))
+            (allow ARG1 file relabelto_file_perms)
+            (call files.generic_modules.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro rename_files ((type ARG1))
+            (allow ARG1 file rename_file_perms)
+            (call files.generic_modules.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro rw_files ((type ARG1))
+            (allow ARG1 file rw_file_perms)
+            (call files.generic_modules.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro setattr_files ((type ARG1))
+            (allow ARG1 file
+                (file
+                    (
+                        setattr
+                    )
+                )
+            )
+            (call files.generic_modules.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro write_files ((type ARG1))
+            (allow ARG1 file write_file_perms)
+            (call files.generic_modules.search
+                (
+                    ARG1
+                )
+            )
+        )
+
+        ;
+        ; module_dep policy
+        ;
+
+        (blockinherit files.file.obj_stub)
+
+        (blockinherit files.runtime_file.obj_template)
+
+        (call manage_files
+            (
+                subj
+            )
+        )
+        (call generic_modules_obj_type_transition
+            (
+                subj
+            )
+        )
+    )
+)
