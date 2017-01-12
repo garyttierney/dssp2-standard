@@ -52,6 +52,7 @@ BASE_POLICY_SOURCES = policy/base/access_vectors.cil \
 	policy/base/terminals.cil
 
 STANDARD_POLICY_SOURCES = policy/standard.cil \
+	policy/system/chkpwd.cil \
 	policy/system/fsutils.cil \
 	policy/system/misc_files.cil \
 	policy/system/mount.cil \

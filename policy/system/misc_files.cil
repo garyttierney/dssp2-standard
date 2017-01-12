@@ -31,6 +31,10 @@
 ;       Misc utmp name space
 ;       Misc wtmp name space
 
+;
+; Misc name space
+;
+
 (block misc
 
     ;
