@@ -58,6 +58,7 @@ STANDARD_POLICY_SOURCES = policy/standard.cil \
 	policy/system/hwclock.cil \
 	policy/system/iputils.cil \
 	policy/system/kmod.cil \
+	policy/system/ldconfig.cil \
 	policy/system/misc_files.cil \
 	policy/system/mount.cil \
 	policy/system/seutils.cil \

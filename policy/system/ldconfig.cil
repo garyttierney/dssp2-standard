@@ -1,0 +1,130 @@
+; -*- mode: CIL; fill-column: 75; indent-tabs-mode: nil; tab-width: 4 -*-
+
+; LDconfig policy
+;
+; 1. LDconfig name space
+;       LDconfig var_cache name space
+
+;
+; LDconfig name space
+;
+
+(block ldconfig
+
+    ;
+    ; Contexts
+    ;
+
+    (filecon "/usr/sbin/ldconfig" file cmd_file_context)
+    (filecon "/usr/sbin/sln" file cmd_file_context)
+
+    ;
+    ; Policy
+    ;
+
+    (blockinherit hybrid_agent_template)
+
+    (dontaudit subj self
+        (capability
+            (
+                dac_override
+            )
+        )
+    )
+    (allow subj self
+        (capability
+            (
+                dac_read_search
+                sys_chroot
+            )
+        )
+    )
+
+    (call files.generic_config.read
+        (
+            subj
+        )
+    )
+
+    (call lib.generic_libraries.manage_dirs
+        (
+            subj
+        )
+    )
+    (call lib.generic_libraries.manage_lnk_files
+        (
+            subj
+        )
+    )
+    (call lib.ld_so_cache.generic_config_obj_type_transition
+        (
+            subj
+        )
+    )
+    (call lib.ld_so_cache.manage_files
+        (
+            subj
+        )
+    )
+    (call lib.lib_file.manage_files
+        (
+            subj
+        )
+    )
+
+    (call misc.generic_cert.manage_lnk_files
+        (
+            subj
+        )
+    )
+
+    (optional ldconfig_optional_systemd
+        (call systemd.daemon
+            (
+                subj cmd_file
+            )
+        )
+    )
+
+    ;
+    ; LDconfig var_cache name space
+    ;
+
+    (block var_cache
+
+        ;
+        ; var_cache contexts
+        ;
+
+        (filecon "/var/cache/ldconfig(/.*)?" any var_cache_file_context)
+
+        ;
+        ; var_cache macros
+        ;
+
+        (macro generic_var_cache_obj_type_transition ((type ARG1))
+            (call files.generic_var_cache.obj_type_transition
+                (
+                    ARG1 var_cache_file dir "ldconfig"
+                )
+            )
+        )
+
+        ;
+        ; var_cache policy
+        ;
+
+        (blockinherit files.var_cache_file.obj_template)
+
+        (call generic_var_cache_obj_type_transition
+            (
+                subj
+            )
+        )
+        (call manage
+            (
+                subj
+            )
+        )
+    )
+)

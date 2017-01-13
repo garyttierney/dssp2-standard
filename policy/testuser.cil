@@ -191,6 +191,14 @@
         )
     )
 
+    (optional testuser_optional_ldconfig
+        (call ldconfig.var_cache.generic_var_cache_obj_type_transition
+            (
+                subj
+            )
+        )
+    )
+
     (optional testuser_optional_miscfiles
         (call misc.fstab.control_client_subj_type
             (
