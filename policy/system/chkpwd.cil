@@ -81,12 +81,12 @@
     )
 
     (optional chkpwd_optional_systemd
-        (call systemd.rw_inherited_fifo_files
+        (call systemd.system.rw_inherited_fifo_files
             (
                 subj
             )
         )
-        (call systemd.daemon
+        (call systemd.system.daemon
             (
                 subj cmd_file
             )

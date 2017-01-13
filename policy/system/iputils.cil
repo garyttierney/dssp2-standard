@@ -100,7 +100,7 @@
     ;;)
 
     (optional iputils_optional_systemd
-        (call systemd.forked.subj_type
+        (call systemd.system.forked_subj_type
             (
                 subj
             )

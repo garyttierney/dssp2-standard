@@ -119,7 +119,7 @@
     )
 
     (optional kmod_optional_systemd
-        (call systemd.daemon
+        (call systemd.system.daemon
             (
                 subj cmd_file
             )
