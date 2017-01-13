@@ -3764,7 +3764,7 @@
 
             (macro add_entries ((type ARG1))
                 (allow ARG1 obj_type_attribute add_entry_dir_perms)
-                (call misc.font.cache.search
+                (call misc.font.var_cache.search
                     (
                         ARG1
                     )
@@ -3877,7 +3877,7 @@
 
             (macro del_entries ((type ARG1))
                 (allow ARG1 obj_type_attribute del_entry_dir_perms)
-                (call misc.font.cache.search
+                (call misc.font.var_cache.search
                     (
                         ARG1
                     )
@@ -4083,7 +4083,7 @@
 
             (macro list ((type ARG1))
                 (allow ARG1 obj_type_attribute list_dir_perms)
-                (call misc.font.cache.search
+                (call misc.font.var_cache.search
                     (
                         ARG1
                     )
@@ -4120,7 +4120,7 @@
 
             (macro manage_dirs ((type ARG1))
                 (allow ARG1 obj_type_attribute manage_dir_perms)
-                (call misc.font.cache.search
+                (call misc.font.var_cache.search
                     (
                         ARG1
                     )
@@ -4574,7 +4574,7 @@
 
             (macro rw_dirs ((type ARG1))
                 (allow ARG1 obj_type_attribute rw_dir_perms)
-                (call misc.font.cache.search
+                (call misc.font.var_cache.search
                     (
                         ARG1
                     )
@@ -4631,7 +4631,7 @@
 
             (macro search ((type ARG1))
                 (allow ARG1 obj_type_attribute search_dir_perms)
-                (call misc.font.cache.search
+                (call misc.font.var_cache.search
                     (
                         ARG1
                     )
@@ -4761,7 +4761,7 @@
 
             (macro write_dirs ((type ARG1))
                 (allow ARG1 obj_type_attribute write_dir_perms)
-                (call misc.font.cache.search
+                (call misc.font.var_cache.search
                     (
                         ARG1
                     )
@@ -4824,10 +4824,10 @@
         )
 
         ;
-        ; Misc font cache name space
+        ; Misc font var_cache name space
         ;
 
-        (block cache
+        (block var_cache
 
             ;
             ; font.cache contexts
@@ -4837,7 +4837,7 @@
                 var_cache_file_context)
 
             ;
-            ; font.cache policy
+            ; font.var_cache policy
             ;
 
             (blockinherit files.var_cache_file.obj_template)
