@@ -7511,7 +7511,7 @@
         ; home_cache_file macros
         ;
 
-        (blockinherit obj_macro_template)
+        (blockinherit obj_all_macro_template)
 
         ;
         ; home_cache_file policy
@@ -7529,10 +7529,10 @@
         ; home_cache_file templates
         ;
 
-        (block obj_macro_template
+        (block obj_all_macro_template
 
             ;
-            ; users.home_cache_file.obj_macro_template macros
+            ; users.home_cache_file.obj_all_macro_template macros
             ;
 
             (macro add_entries ((type ARG1))
@@ -8170,10 +8170,10 @@
             )
 
             ;
-            ; users.home_cache_file.obj_macro_template policy
+            ; users.home_cache_file.obj_all_macro_template policy
             ;
 
-            (blockabstract obj_macro_template)
+            (blockabstract obj_all_macro_template)
         )
 
         (block obj_stub
@@ -9814,7 +9814,7 @@
         ; home_config_file macros
         ;
 
-        (blockinherit obj_macro_template)
+        (blockinherit obj_all_macro_template)
 
         ;
         ; home_config_file policy
@@ -9832,10 +9832,10 @@
         ; home_config_file templates
         ;
 
-        (block obj_macro_template
+        (block obj_all_macro_template
 
             ;
-            ; users.home_config_file.obj_macro_template macros
+            ; users.home_config_file.obj_all_macro_template macros
             ;
 
             (macro add_entries ((type ARG1))
@@ -10473,10 +10473,10 @@
             )
 
             ;
-            ; users.home_config_file.obj_macro_template policy
+            ; users.home_config_file.obj_all_macro_template policy
             ;
 
-            (blockabstract obj_macro_template)
+            (blockabstract obj_all_macro_template)
         )
 
         (block obj_stub
@@ -11176,7 +11176,7 @@
         ; home_data_file macros
         ;
 
-        (blockinherit obj_macro_template)
+        (blockinherit obj_all_macro_template)
 
         ;
         ; home_data_file policy
@@ -11194,10 +11194,10 @@
         ; home_data_file templates
         ;
 
-        (block obj_macro_template
+        (block obj_all_macro_template
 
             ;
-            ; users.home_data_file.obj_macro_template macros
+            ; users.home_data_file.obj_all_macro_template macros
             ;
 
             (macro add_entries ((type ARG1))
@@ -11835,10 +11835,10 @@
             )
 
             ;
-            ; users.home_data_file.obj_macro_template policy
+            ; users.home_data_file.obj_all_macro_template policy
             ;
 
-            (blockabstract obj_macro_template)
+            (blockabstract obj_all_macro_template)
         )
 
         (block obj_stub
@@ -12785,7 +12785,7 @@
         ; home_file macros
         ;
 
-        (blockinherit obj_macro_template)
+        (blockinherit obj_all_macro_template)
 
         ;
         ; home_file policy
@@ -12811,10 +12811,10 @@
         ; home_file templates
         ;
 
-        (block obj_macro_template
+        (block obj_all_macro_template
 
             ;
-            ; users.home_file.obj_macro_template macros
+            ; users.home_file.obj_all_macro_template macros
             ;
 
             (macro dontaudit_rw ((type ARG1))
@@ -13675,10 +13675,10 @@
             )
 
             ;
-            ; users.home_file.obj_macro_template policy
+            ; users.home_file.obj_all_macro_template policy
             ;
 
-            (blockabstract obj_macro_template)
+            (blockabstract obj_all_macro_template)
         )
 
         (block obj_stub
@@ -14591,7 +14591,7 @@
         ; home_font macros
         ;
 
-        (blockinherit obj_macro_template)
+        (blockinherit obj_all_macro_template)
 
         (macro client_subj_type ((type ARG1))
             (typeattributeset client_subj_type_attribute ARG1)
@@ -14614,10 +14614,10 @@
         ; home_font templates
         ;
 
-        (block obj_macro_template
+        (block obj_all_macro_template
 
             ;
-            ; users.home_font.obj_macro_template macros
+            ; users.home_font.obj_all_macro_template macros
             ;
 
             (macro add_entries ((type ARG1))
@@ -15675,10 +15675,10 @@
             )
 
             ;
-            ; users.home_font.obj_macro_template policy
+            ; users.home_font.obj_all_macro_template policy
             ;
 
-            (blockabstract obj_macro_template)
+            (blockabstract obj_all_macro_template)
         )
 
         ;
@@ -16639,7 +16639,7 @@
         ; user_tmp_file macros
         ;
 
-        (blockinherit obj_macro_template)
+        (blockinherit obj_all_macro_template)
 
         ;
         ; user_tmp_file policy
@@ -16657,10 +16657,10 @@
         ; user_tmp_file templates
         ;
 
-        (block obj_macro_template
+        (block obj_all_macro_template
 
             ;
-            ; users.user_tmp_file.obj_macro_template macros
+            ; users.user_tmp_file.obj_all_macro_template macros
             ;
 
             (macro add_entries ((type ARG1))
@@ -17511,10 +17511,10 @@
             )
 
             ;
-            ; users.user_tmp_file.obj_macro_template policy
+            ; users.user_tmp_file.obj_all_macro_template policy
             ;
 
-            (blockabstract obj_macro_template)
+            (blockabstract obj_all_macro_template)
         )
 
         (block obj_stub
@@ -18427,7 +18427,7 @@
         ; user_tmpfs_file macros
         ;
 
-        (blockinherit obj_macro_template)
+        (blockinherit obj_all_macro_template)
 
         ;
         ; user_tmpfs_file policy
@@ -18445,10 +18445,10 @@
         ; user_tmpfs_file templates
         ;
 
-        (block obj_macro_template
+        (block obj_all_macro_template
 
             ;
-            ; users.user_tmpfs_file.obj_macro_template macros
+            ; users.user_tmpfs_file.obj_all_macro_template macros
             ;
 
             (macro add_entries ((type ARG1))
@@ -19694,10 +19694,10 @@
             )
 
             ;
-            ; users.user_tmpfs_file.obj_macro_template policy
+            ; users.user_tmpfs_file.obj_all_macro_template policy
             ;
 
-            (blockabstract obj_macro_template)
+            (blockabstract obj_all_macro_template)
         )
 
         (block obj_stub
