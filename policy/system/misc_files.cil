@@ -100,7 +100,7 @@
         ; cert_file macros
         ;
 
-        (blockinherit obj_macro_template)
+        (blockinherit obj_all_macro_template)
 
         ;
         ; cert_file policy
@@ -118,10 +118,653 @@
         ; cert_file templates
         ;
 
-        (block obj_macro_template
+        (block obj_nested_file_macro_template
 
             ;
-            ; misc.cert_file.obj_macro_template macros
+            ; misc.cert_file.obj_nested_file_macro_template macros
+            ;
+
+            (macro add_entries ((type ARG1))
+                (allow ARG1 cert_file add_entry_dir_perms)
+                (call cert.search
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro append_files ((type ARG1))
+                (allow ARG1 cert_file append_file_perms)
+                (call cert.search
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro create ((type ARG1))
+                (call create_dirs
+                    (
+                        ARG1
+                    )
+                )
+                (call create_files
+                    (
+                        ARG1
+                    )
+                )
+                (call create_lnk_files
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro create_dirs ((type ARG1))
+                (allow ARG1 cert_file create_dir_perms)
+                (call cert.search
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro create_files ((type ARG1))
+                (allow ARG1 cert_file create_file_perms)
+                (call cert.search
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro create_lnk_files ((type ARG1))
+                (allow ARG1 cert_file create_lnk_file_perms)
+                (call cert.search
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro del_entries ((type ARG1))
+                (allow ARG1 cert_file del_entry_dir_perms)
+                (call cert.search
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro delete ((type ARG1))
+                (call delete_dirs
+                    (
+                        ARG1
+                    )
+                )
+                (call delete_files
+                    (
+                        ARG1
+                    )
+                )
+                (call delete_lnk_files
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro delete_dirs ((type ARG1))
+                (allow ARG1 cert_file delete_dir_perms)
+                (call cert.search
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro delete_files ((type ARG1))
+                (allow ARG1 cert_file delete_file_perms)
+                (call cert.search
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro delete_lnk_files ((type ARG1))
+                (allow ARG1 cert_file delete_lnk_file_perms)
+                (call cert.search
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro execute ((type ARG1))
+                (allow ARG1 cert_file exec_file_perms)
+                (call cert.search
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro getattr ((type ARG1))
+                (call getattr_dirs
+                    (
+                        ARG1
+                    )
+                )
+                (call getattr_files
+                    (
+                        ARG1
+                    )
+                )
+                (call getattr_lnk_files
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro getattr_dirs ((type ARG1))
+                (allow ARG1 cert_file
+                    (dir
+                        (
+                            getattr
+                        )
+                    )
+                )
+                (call cert.search
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro getattr_files ((type ARG1))
+                (allow ARG1 cert_file
+                    (file
+                        (
+                            getattr
+                        )
+                    )
+                )
+                (call cert.search
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro getattr_lnk_files ((type ARG1))
+                (allow ARG1 cert_file
+                    (lnk_file
+                        (
+                            getattr
+                        )
+                    )
+                )
+                (call cert.search
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro list ((type ARG1))
+                (allow ARG1 cert_file list_dir_perms)
+                (call cert.search
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro manage ((type ARG1))
+                (call manage_dirs
+                    (
+                        ARG1
+                    )
+                )
+                (call manage_files
+                    (
+                        ARG1
+                    )
+                )
+                (call manage_lnk_files
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro manage_dirs ((type ARG1))
+                (allow ARG1 cert_file manage_dir_perms)
+                (call cert.search
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro manage_files ((type ARG1))
+                (allow ARG1 cert_file manage_file_perms)
+                (call cert.search
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro manage_lnk_files ((type ARG1))
+                (allow ARG1 cert_file manage_lnk_file_perms)
+                (call cert.search
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro mmap ((type ARG1))
+                (allow ARG1 cert_file mmap_file_perms)
+                (call cert.search
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro read ((type ARG1))
+                (call list
+                    (
+                        ARG1
+                    )
+                )
+                (call read_files
+                    (
+                        ARG1
+                    )
+                )
+                (call read_lnk_files
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro read_files ((type ARG1))
+                (allow ARG1 cert_file read_file_perms)
+                (call cert.search
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro read_lnk_files ((type ARG1))
+                (allow ARG1 cert_file read_lnk_file_perms)
+                (call cert.search
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro relabel ((type ARG1))
+                (call relabel_dirs
+                    (
+                        ARG1
+                    )
+                )
+                (call relabel_files
+                    (
+                        ARG1
+                    )
+                )
+                (call relabel_lnk_files
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro relabel_dirs ((type ARG1))
+                (allow ARG1 cert_file relabel_dir_perms)
+                (call cert.search
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro relabel_files ((type ARG1))
+                (allow ARG1 cert_file relabel_file_perms)
+                (call cert.search
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro relabel_lnk_files ((type ARG1))
+                (allow ARG1 cert_file relabel_lnk_file_perms)
+                (call cert.search
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro relabelfrom ((type ARG1))
+                (call relabelfrom_dirs
+                    (
+                        ARG1
+                    )
+                )
+                (call relabelfrom_files
+                    (
+                        ARG1
+                    )
+                )
+                (call relabelfrom_lnk_files
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro relabelfrom_dirs ((type ARG1))
+                (allow ARG1 cert_file relabelfrom_dir_perms)
+                (call cert.search
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro relabelfrom_files ((type ARG1))
+                (allow ARG1 cert_file relabelfrom_file_perms)
+                (call cert.search
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro relabelfrom_lnk_files ((type ARG1))
+                (allow ARG1 cert_file relabelfrom_lnk_file_perms)
+                (call cert.search
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro relabelto ((type ARG1))
+                (call relabelto_dirs
+                    (
+                        ARG1
+                    )
+                )
+                (call relabelto_files
+                    (
+                        ARG1
+                    )
+                )
+                (call relabelto_lnk_files
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro relabelto_dirs ((type ARG1))
+                (allow ARG1 cert_file relabelto_dir_perms)
+                (call cert.search
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro relabelto_files ((type ARG1))
+                (allow ARG1 cert_file relabelto_file_perms)
+                (call cert.search
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro relabelto_lnk_files ((type ARG1))
+                (allow ARG1 cert_file relabelto_lnk_file_perms)
+                (call cert.search
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro rename ((type ARG1))
+                (call rename_dirs
+                    (
+                        ARG1
+                    )
+                )
+                (call rename_files
+                    (
+                        ARG1
+                    )
+                )
+                (call rename_lnk_files
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro rename_dirs ((type ARG1))
+                (allow ARG1 cert_file rename_dir_perms)
+                (call cert.search
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro rename_files ((type ARG1))
+                (allow ARG1 cert_file rename_file_perms)
+                (call cert.search
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro rename_lnk_files ((type ARG1))
+                (allow ARG1 cert_file rename_lnk_file_perms)
+                (call cert.search
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro rw ((type ARG1))
+                (call rw_dirs
+                    (
+                        ARG1
+                    )
+                )
+                (call rw_files
+                    (
+                        ARG1
+                    )
+                )
+                (call rw_lnk_files
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro rw_dirs ((type ARG1))
+                (allow ARG1 cert_file rw_dir_perms)
+                (call cert.search
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro rw_files ((type ARG1))
+                (allow ARG1 cert_file rw_file_perms)
+                (call cert.search
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro rw_lnk_files ((type ARG1))
+                (allow ARG1 cert_file rw_lnk_file_perms)
+                (call cert.search
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro search ((type ARG1))
+                (allow ARG1 cert_file search_dir_perms)
+                (call cert.search
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro setattr ((type ARG1))
+                (call setattr_dirs
+                    (
+                        ARG1
+                    )
+                )
+                (call setattr_files
+                    (
+                        ARG1
+                    )
+                )
+                (call setattr_lnk_files
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro setattr_dirs ((type ARG1))
+                (allow ARG1 cert_file
+                    (dir
+                        (
+                            setattr
+                        )
+                    )
+                )
+                (call cert.search
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro setattr_files ((type ARG1))
+                (allow ARG1 cert_file
+                    (file
+                        (
+                            setattr
+                        )
+                    )
+                )
+                (call cert.search
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro setattr_lnk_files ((type ARG1))
+                (allow ARG1 cert_file
+                    (lnk_file
+                        (
+                            setattr
+                        )
+                    )
+                )
+                (call cert.search
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro write ((type ARG1))
+                (call write_dirs
+                    (
+                        ARG1
+                    )
+                )
+                (call write_files
+                    (
+                        ARG1
+                    )
+                )
+                (call write_lnk_files
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro write_dirs ((type ARG1))
+                (allow ARG1 cert_file write_dir_perms)
+                (call cert.search
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro write_files ((type ARG1))
+                (allow ARG1 cert_file write_file_perms)
+                (call cert.search
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro write_lnk_files ((type ARG1))
+                (allow ARG1 cert_file write_lnk_file_perms)
+                (call cert.search
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            ;
+            ; misc.cert_file.obj_nested_file_macro_template policy
+            ;
+
+            (blockabstract obj_nested_file_macro_template)
+        )
+
+        (block obj_all_macro_template
+
+            ;
+            ; misc.cert_file.obj_all_macro_template macros
             ;
 
             (macro add_entries ((type ARG1))
@@ -759,10 +1402,10 @@
             )
 
             ;
-            ; misc.cert_file.obj_macro_template policy
+            ; misc.cert_file.obj_all_macro_template policy
             ;
 
-            (blockabstract obj_macro_template)
+            (blockabstract obj_all_macro_template)
         )
 
         (block obj_stub
