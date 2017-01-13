@@ -48,7 +48,7 @@
         ; common_login_user macros
         ;
 
-        (blockinherit common_user.subj_macro_template)
+        (blockinherit common_user.subj_all_macro_template)
 
         ;
         ; common_login_user policy
@@ -548,7 +548,7 @@
         ; common_user macros
         ;
 
-        (blockinherit subj_macro_template)
+        (blockinherit subj_all_macro_template)
 
         ;
         ; common_user policy
@@ -560,13 +560,13 @@
         ; common_user templates
         ;
 
-        (block subj_macro_template
+        (block subj_all_macro_template
 
             ;
-            ; users.common_user.subj_macro_template macros
+            ; users.common_user.subj_all_macro_template macros
             ;
 
-            (blockinherit subj.common_subj.subj_macro_template)
+            (blockinherit subj.common_subj.subj_all_macro_template)
 
             (macro manual_subj_type_transition ((type ARG1))
                 (allow ARG1 self
@@ -616,10 +616,10 @@
             )
 
             ;
-            ; users.common_user.subj_macro_template policy
+            ; users.common_user.subj_all_macro_template policy
             ;
 
-            (blockabstract subj_macro_template)
+            (blockabstract subj_all_macro_template)
         )
 
         (block subj_policy_template
@@ -16141,7 +16141,7 @@
         ; priv_login_user macros
         ;
 
-        (blockinherit common_user.subj_macro_template)
+        (blockinherit common_user.subj_all_macro_template)
 
         ;
         ; priv_login_user policy
@@ -16233,7 +16233,7 @@
         ; priv_user macros
         ;
 
-        (blockinherit common_user.subj_macro_template)
+        (blockinherit common_user.subj_all_macro_template)
 
         ;
         ; priv_user policy
@@ -16536,7 +16536,7 @@
         ; unpriv_login_user macros
         ;
 
-        (blockinherit common_user.subj_macro_template)
+        (blockinherit common_user.subj_all_macro_template)
 
         ;
         ; unpriv_login_user policy
@@ -16599,7 +16599,7 @@
         ; unpriv_user macros
         ;
 
-        (blockinherit common_user.subj_macro_template)
+        (blockinherit common_user.subj_all_macro_template)
 
         ;
         ; unpriv_user policy
