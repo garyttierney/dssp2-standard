@@ -78,6 +78,14 @@
         )
     )
 
+    (optional ldconfig_optional_rpm
+        (call rpm.script.client_subj_type
+            (
+                ARG1
+            )
+        )
+    )
+
     (optional ldconfig_optional_systemd
         (call systemd.daemon
             (
