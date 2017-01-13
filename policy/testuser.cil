@@ -199,6 +199,19 @@
         )
     )
 
+    (optional testuser_optional_lvm
+        (call lvm.runtime.generic_runtime_obj_type_transition
+            (
+                subj
+            )
+        )
+        (call lvm.runtime_lock.generic_runtime_lock_obj_type_transition
+            (
+                subj
+            )
+        )
+    )
+
     (optional testuser_optional_miscfiles
         (call misc.fstab.control_client_subj_type
             (

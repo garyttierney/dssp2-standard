@@ -248,6 +248,19 @@
         )
     )
 
+    (optional sys_optional_lvm
+        (call lvm.runtime.generic_runtime_obj_type_transition
+            (
+                isid
+            )
+        )
+        (call lvm.runtime_lock.generic_runtime_lock_obj_type_transition
+            (
+                isid
+            )
+        )
+    )
+
     (optional sys_optional_miscfiles
         (call misc.fstab.control_client_subj_type
             (

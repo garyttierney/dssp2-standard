@@ -1,0 +1,410 @@
+; -*- mode: CIL; fill-column: 75; indent-tabs-mode: nil; tab-width: 4 -*-
+
+; LVM policy
+;
+; 1. LVM name space
+;       LVM config name space
+;       LVM metadata name space
+;       LVM runtime name space
+;       LVM runtime_lock name space
+;       LVM tmpfs name space
+
+;
+; LVM name space
+;
+
+(block lvm
+
+    ;
+    ; Contexts
+    ;
+
+    (filecon "/usr/sbin/lvm" file cmd_file_context)
+    (filecon "/usr/sbin/lvmconf" file cmd_file_context)
+    (filecon "/usr/sbin/lvmdump" file cmd_file_context)
+    (filecon "/usr/sbin/vgimportclone" file cmd_file_context)
+    (filecon
+        "/usr/lib/systemd/system-generators/lvm2-activation-generator"
+            file cmd_file_context)
+
+    ;
+    ; Macros
+    ;
+
+    (macro client_subj_type ((type ARG1))
+        (typeattributeset client_subj_type_attribute ARG1)
+    )
+
+    (macro rw_sem ((type ARG1))
+        (allow ARG1 subj rw_sem_perms)
+    )
+
+    ;
+    ; Policy
+    ;
+
+    (typeattribute client_subj_type_attribute)
+
+    (blockinherit hybrid_agent_template)
+
+    (dontaudit subj self
+        (capability
+            (
+                dac_override
+            )
+        )
+    )
+    (allow subj self
+        (capability
+            (
+                dac_read_search
+                ipc_lock
+                sys_admin
+                sys_nice
+                sys_rawio
+            )
+        )
+    )
+    (allow subj self
+        (process
+            (
+                setsched
+            )
+        )
+    )
+    (allow subj self create_sem_perms)
+
+    (call ibac_obj_sys_id_change_exemption_subj_type
+        (
+            subj
+        )
+    )
+    (call rbac_obj_sys_role_change_exemption_subj_type
+        (
+            subj
+        )
+    )
+
+    (call sys.get_sysvipc_info
+        (
+            subj
+        )
+    )
+    (call sys.kcore_proc.getattr_files
+        (
+            subj
+        )
+    )
+    (call sys.use_fd
+        (
+            subj
+        )
+    )
+
+    (call dev.dev_file.getattr_chr_files
+        (
+            subj
+        )
+    )
+    (call dev.lvm_control.rw_chr_files
+        (
+            subj
+        )
+    )
+    (call dev.random.read_chr_files
+        (
+            subj
+        )
+    )
+
+    (call fs.devpts.getattr_chr_files
+        (
+            subj
+        )
+    )
+    (call fs.devtmpfs.read_lnk_files
+        (
+            subj
+        )
+    )
+    (call fs.hugetlbfs.list
+        (
+            subj
+        )
+    )
+    (call fs.proc.read_files
+        (
+            subj
+        )
+    )
+    (call fs.pstore.list
+        (
+            subj
+        )
+    )
+    (call fs.sysfs.read
+        (
+            subj
+        )
+    )
+    (call fs.tmpfs.list
+        (
+            subj
+        )
+    )
+
+    (call sec.set_fscreate_subj_type
+        (
+            subj
+        )
+    )
+
+    (call stor.stor_file.manage
+        (
+            subj
+        )
+    )
+
+    (call seutils.config.read_files
+        (
+            subj
+        )
+    )
+    (call seutils.file_context.read_files
+        (
+            subj
+        )
+    )
+    (call seutils.default_context.read_files
+        (
+            subj
+        )
+    )
+
+    ;;(call udev.client_subj_type
+    ;;    (
+    ;;        subj
+    ;;    )
+    ;;)
+
+    (optional lvm_optional_dbus
+        (call dbus.system.client_subj_type
+            (
+                subj
+            )
+        )
+    )
+
+    (optional lvm_optional_systemd
+        (call systemd.system.daemon
+            (
+                subj cmd_file
+            )
+        )
+
+        (call systemd.system.log_parse_env_subj_type
+            (
+                subj
+            )
+        )
+    )
+
+    ;
+    ; lvm client policy
+    ;
+
+	(allow subj client_subj_type_attribute
+        (process_state
+            (
+                read
+            )
+        )
+    )
+
+    ;
+    ; LVM config name space
+    ;
+
+    (block config
+
+        ;
+        ; config contexts
+        ;
+
+        (filecon "/etc/lvm(/.*)?" any config_file_context)
+
+        ;
+        ; config policy
+        ;
+
+        (blockinherit files.config_file.obj_template)
+
+        (call read
+            (
+                subj
+            )
+        )
+    )
+
+    ;
+    ; LVM metadata name space
+    ;
+
+    (block metadata
+
+        ;
+        ; metadata contexts
+        ;
+
+        (filecon "/etc/lvm/archive(/.*)?" any config_file_context)
+        (filecon "/etc/lvm/backup(/.*)?" any config_file_context)
+        (filecon "/etc/lvm/cache(/.*)?" any config_file_context)
+        (filecon "/etc/lvm/profile(/.*)?" any config_file_context)
+
+        ;
+        ; metadata macros
+        ;
+
+        (blockinherit files.config_file.obj_nested_file_macro_template)
+
+        ;
+        ; metadata policy
+        ;
+
+        (blockinherit files.config_file.obj_stub)
+
+        (call manage
+            (
+                subj
+            )
+        )
+    )
+
+    ;
+    ; LVM runtime name space
+    ;
+
+    (block runtime
+
+        ;
+        ; runtime contexts
+        ;
+
+        (filecon "/run/lvm(/.*)?" any runtime_file_context)
+
+        ;
+        ; runtime macros
+        ;
+
+        (macro generic_runtime_obj_type_transition ((type ARG1))
+            (call files.generic_runtime.obj_type_transition
+                (
+                    ARG1 runtime_file dir "lvm"
+                )
+            )
+        )
+
+        ;
+        ; runtime policy
+        ;
+
+        (blockinherit files.runtime_file.obj_template)
+
+        (call generic_runtime_obj_type_transition
+            (
+                subj
+            )
+        )
+        (call manage
+            (
+                subj
+            )
+        )
+
+        (optional lvm_runtime_optional_systemd
+            (call systemd.system.socket_activated_obj_type
+                (
+                    runtime_file
+                )
+            )
+        )
+    )
+
+    ;
+    ; LVM runtime_lock name space
+    ;
+
+    (block runtime_lock
+
+        ;
+        ; runtime_lock contexts
+        ;
+
+        (filecon "/run/lock/lvm(/.*)?" any runtime_lock_file_context)
+
+        ;
+        ; runtime_lock macros
+        ;
+
+        (macro generic_runtime_lock_obj_type_transition ((type ARG1))
+            (call files.generic_runtime_lock.obj_type_transition
+                (
+                    ARG1 runtime_lock_file dir "lvm"
+                )
+            )
+        )
+
+        ;
+        ; runtime_lock policy
+        ;
+
+        (blockinherit files.runtime_lock_file.obj_template)
+
+        (call generic_runtime_lock_obj_type_transition
+            (
+                subj
+            )
+        )
+        (call manage
+            (
+                subj
+            )
+        )
+    )
+
+    ;
+    ; LVM tmpfs name space
+    ;
+
+    (block tmpfs
+
+        ;
+        ; tmpfs macros
+        ;
+
+        (macro tmpfs_obj_type_transition ((type ARG1))
+            (call fs.tmpfs.obj_type_transition
+                (
+                    ARG1 user_tmpfs_file file "*"
+                )
+            )
+        )
+
+        ;
+        ; tmpfs policy
+        ;
+
+        (blockinherit users.user_tmpfs_file.obj_template)
+
+        (call manage
+            (
+                subj
+            )
+        )
+        (call tmpfs_obj_type_transition
+            (
+                subj
+            )
+        )
+    )
+)
