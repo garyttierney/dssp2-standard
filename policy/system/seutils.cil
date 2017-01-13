@@ -146,6 +146,14 @@
             )
         )
 
+        (macro seutils_config_obj_type_transition ((type ARG1))
+            (call config.obj_type_transition
+                (
+                    ARG1 config_file dir "contexts"
+                )
+            )
+        )
+
         ;
         ; default_context policy
         ;
