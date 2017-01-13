@@ -339,19 +339,19 @@
             )
         )
 
-        (call users.generic_cache.home_dir_obj_type_transition
+        (call users.generic_home_cache.home_dir_obj_type_transition
             (
                 isid
             )
         )
 
-        (call users.generic_config.home_dir_obj_type_transition
+        (call users.generic_home_config.home_dir_obj_type_transition
             (
                 isid
             )
         )
 
-        (call users.generic_data.home_dir_obj_type_transition
+        (call users.generic_home_data.home_dir_obj_type_transition
             (
                 isid
             )
@@ -447,7 +447,7 @@
             )
         )
 
-        (call users.home_font.cache.generic_cache_obj_type_transition
+        (call users.home_font.cache.generic_home_cache_obj_type_transition
             (
                 isid
             )
@@ -459,7 +459,7 @@
             )
         )
 
-        (call users.home_font.config.generic_config_obj_type_transition
+        (call users.home_font.config.generic_home_config_obj_type_transition
             (
                 isid
             )
