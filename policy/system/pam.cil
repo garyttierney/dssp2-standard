@@ -1,0 +1,706 @@
+; -*- mode: CIL; fill-column: 75; indent-tabs-mode: nil; tab-width: 4 -*-
+
+; PAM policy
+;
+; 1. PAM access vector declarations
+; 2. PAM file context specifications in cmd.generic_commands name space
+; 3. PAM name space
+;       PAM config name space
+;       PAM console name space
+;           PAM console runtime name space
+;       PAM faillog name space
+;           PAM faillog runtime name space
+;           PAM faillog var_log name space
+;       PAM lastlog name space
+;       PAM login_program name space
+;       PAM nologin name space
+;       PAM runtime name space
+
+;
+; PAM access vector declarations
+;
+
+(class passwd
+    (
+        chfn
+        chsh
+        crontab
+        passwd
+        rootok
+    )
+)
+
+(classorder
+    (unordered
+        passwd
+    )
+)
+
+;
+; PAM file context specifications in cmd.generic_commands name space
+;
+
+(in cmd.generic_commands
+    (filecon "/etc/security/namespace\.init" file cmd_file_context)
+)
+
+;
+; PAM name space
+;
+
+(block pam
+
+    ;
+    ; Contexts
+    ;
+
+
+    (filecon "/usr/sbin/pam_timestamp_check" file cmd_file_context)
+
+    ;
+    ; Macros
+    ;
+
+    (macro change_users_crontab ((type ARG1))
+        (allow ARG1 self
+            (passwd
+                (
+                    crontab
+                )
+            )
+        )
+    )
+
+    (macro change_users_finger ((type ARG1))
+        (allow ARG1 self
+            (passwd
+                (
+                    chfn
+                )
+            )
+        )
+    )
+
+    (macro change_users_passwd ((type ARG1))
+        (allow ARG1 self
+            (passwd
+                (
+                    passwd
+                )
+            )
+        )
+    )
+
+    (macro change_users_shell ((type ARG1))
+        (allow ARG1 self
+            (passwd
+                (
+                    chsh
+                )
+            )
+        )
+    )
+
+    (macro client_subj_type ((type ARG1))
+        (typeattributeset client_subj_type_attribute ARG1)
+    )
+
+    (macro rootok ((type ARG1))
+        (allow ARG1 self
+            (passwd
+                (
+                    rootok
+                )
+            )
+        )
+    )
+
+    (macro unconfined_subj_type ((type ARG1))
+        (typeattributeset unconfined_subj_type_attribute ARG1)
+    )
+
+    ;
+    ; Policy
+    ;
+
+    (typeattribute client_subj_type_attribute)
+    (typeattribute unconfined_subj_type_attribute)
+
+    (blockinherit system_agent_template)
+
+    (allow unconfined_subj_type_attribute self
+        (passwd
+            (
+                chfn
+                chsh
+                crontab
+                passwd
+                rootok
+            )
+        )
+    )
+
+    ;
+    ; pam client policy
+    ;
+
+    (call execute
+        (
+            client_subj_type_attribute
+        )
+    )
+
+    (call faillog.var_log.generic_var_log_obj_type_transition
+        (
+            client_subj_type_attribute
+        )
+    )
+    (call faillog.var_log.create_files
+        (
+            client_subj_type_attribute
+        )
+    )
+    (call faillog.var_log.rw_files
+        (
+            client_subj_type_attribute
+        )
+    )
+
+    (call lastlog.create_files
+        (
+            client_subj_type_attribute
+        )
+    )
+    (call lastlog.generic_var_log_obj_type_transition
+        (
+            client_subj_type_attribute
+        )
+    )
+    (call lastlog.rw_files
+        (
+            client_subj_type_attribute
+        )
+    )
+
+    (call sys.audit_client
+        (
+            client_subj_type_attribute
+        )
+    )
+
+    (call chkpwd.auto_subj_type_transition
+        (
+            client_subj_type_attribute
+        )
+    )
+
+    (call misc.wtmp.dontaudit_write_files
+        (
+            client_subj_type_attribute
+        )
+    )
+    (call misc.wtmp.append_files
+        (
+            client_subj_type_attribute
+        )
+    )
+    (call misc.wtmp.read_files
+        (
+            client_subj_type_attribute
+        )
+    )
+
+    ;;(call nss.client_subj_type
+    ;;    (
+    ;;        client_subj_type_attribute
+    ;;    )
+    ;;)
+
+    ;;(call updpwd.auto_subj_type_transition
+    ;;    (
+    ;;        client_subj_type_attribute
+    ;;    )
+    ;;)
+
+    (optional pam_client_optional_journald
+        (call journald.client_subj_type
+            (
+                client_subj_type_attribute
+            )
+        )
+    )
+
+    ;
+    ; PAM config name space
+    ;
+
+    (block config
+
+        ;
+        ; config contexts
+        ;
+
+        (filecon "/etc/environment" file config_file_context)
+        (filecon "/etc/pam\.d(/.*)?" any config_file_context)
+        (filecon "/etc/security(/.*)?" any config_file_context)
+
+        ;
+        ; config policy
+        ;
+
+        (blockinherit files.config_file.obj_template)
+
+        (call config.read
+            (
+                client_subj_type_attribute
+            )
+        )
+    )
+
+    ;
+    ; PAM console name space
+    ;
+
+    (block console
+
+        ;
+        ; console contexts
+        ;
+
+        (filecon "/usr/sbin/pam_console_apply" file cmd_file_context)
+
+        ;
+        ; console policy
+        ;
+
+        (blockinherit system_agent_template)
+
+        ;
+        ; PAM console runtime name space
+        ;
+
+        (block runtime
+
+            ;
+            ; console runtime contexts
+            ;
+
+            (filecon "/run/console(/.*)?" any runtime_file_context)
+
+            ;
+            ; console runtime macros
+            ;
+
+            (macro generic_runtime_obj_type_transition ((type ARG1))
+                (call files.generic_runtime.obj_type_transition
+                    (
+                        ARG1 runtime_file dir "console"
+                    )
+                )
+                (call files.generic_runtime.obj_type_transition
+                    (
+                        ARG1 runtime_file file "console.lock"
+                    )
+                )
+            )
+
+            ;
+            ; console runtime policy
+            ;
+
+            (blockinherit files.runtime_file.obj_template)
+
+            (call generic_runtime_obj_type_transition
+                (
+                    subj
+                )
+            )
+            (call manage
+                (
+                    subj
+                )
+            )
+        )
+    )
+
+    ;
+    ; PAM faillog name space
+    ;
+
+    (block faillog
+
+        ;
+        ; PAM faillog runtime name space
+        ;
+
+        (block runtime
+
+            ;
+            ; faillog runtime contexts
+            ;
+
+            (filecon "/run/faillock(/.*)?" any runtime_file_context)
+
+            ;
+            ; faillog runtime macros
+            ;
+
+            (macro generic_runtime_obj_type_transition ((type ARG1))
+                (call files.generic_runtime.obj_type_transition
+                    (
+                        ARG1 runtime_file dir "faillock"
+                    )
+                )
+            )
+
+            ;
+            ; faillog runtime policy
+            ;
+
+            (blockinherit files.runtime_file.obj_template)
+        )
+
+        ;
+        ; PAM faillog var_log name space
+        ;
+
+        (block var_log
+
+            ;
+            ; faillog var_log contexts
+            ;
+
+            (filecon "/var/log/btmp.*" file var_log_file_context)
+            (filecon "/var/log/faillog" file var_log_file_context)
+            (filecon "/var/log/tallylog" file var_log_file_context)
+
+            ;
+            ; faillog var_log macros
+            ;
+
+            (macro generic_var_log_obj_type_transition ((type ARG1))
+                (call files.generic_var_log.obj_type_transition
+                    (
+                        ARG1 var_log_file file "btmp"
+                    )
+                )
+                (call files.generic_var_log.obj_type_transition
+                    (
+                        ARG1 var_log_file file "faillog"
+                    )
+                )
+                (call files.generic_var_log.obj_type_transition
+                    (
+                        ARG1 var_log_file file "tallylog"
+                    )
+                )
+            )
+
+            ;
+            ; faillog var_log policy
+            ;
+
+            (blockinherit files.var_log_file.obj_template)
+       )
+    )
+
+    ;
+    ; PAM lastlog name space
+    ;
+
+    (block lastlog
+
+        ;
+        ; lastlog contexts
+        ;
+
+        (filecon "/var/log/lastlog" file var_log_file_context)
+
+        ;
+        ; lastlog macros
+        ;
+
+        (macro generic_var_log_obj_type_transition ((type ARG1))
+            (call files.generic_var_log.obj_type_transition
+                (
+                    ARG1 var_log_file file "lastlog"
+                )
+            )
+        )
+
+        ;
+        ; lastlog policy
+        ;
+
+        (blockinherit files.var_log_file.obj_template)
+    )
+
+    ;
+    ; PAM login_program
+    ;
+
+    (block login_program
+
+        ;
+        ; login_program macros
+        ;
+
+        (blockinherit subj.common_subj.subj_all_macro_template)
+
+        ;
+        ; login_program policy
+        ;
+
+        (typeattribute subj_type_attribute)
+
+        (allow subj_type_attribute self
+            (capability
+                (
+                    chown
+                    setgid
+                    setuid
+                    sys_resource
+                )
+            )
+        )
+        (allow subj_type_attribute self
+            (process
+                (
+                    setexec
+                    setrlimit
+                    setsched
+                )
+            )
+        )
+        (allow subj_type_attribute self write_key_perms)
+        (allow subj_type_attribute self setattr_key_perms)
+
+        (call client_subj_type
+            (
+                subj_type_attribute
+            )
+        )
+
+        (call ibac_id_change_exemption_subj_type
+            (
+                subj_type_attribute
+            )
+        )
+        (call ibac_obj_id_change_exemption_subj_type
+            (
+                subj_type_attribute
+            )
+        )
+        (call rbac_obj_role_change_exemption_subj_type
+            (
+                subj_type_attribute
+            )
+        )
+        (call rbac_role_change_exemption_subj_type
+            (
+                subj_type_attribute
+            )
+        )
+
+        (call sys.read_keyring
+            (
+                subj_type_attribute
+            )
+        )
+
+        (call files.generic_config.read
+            (
+                subj_type_attribute
+            )
+        )
+
+        (call sec.compute_access_vector
+            (
+                subj_type_attribute
+            )
+        )
+        (call sec.compute_relabel_context
+            (
+                subj_type_attribute
+            )
+        )
+        (call sec.compute_user_context
+            (
+                subj_type_attribute
+            )
+        )
+        (call sec.validate_context
+            (
+                subj_type_attribute
+            )
+        )
+
+        (call subj.interactive_fd_subj_type
+            (
+                subj_type_attribute
+            )
+        )
+
+        (call misc.utmp.rw_files
+            (
+                subj_type_attribute
+            )
+        )
+
+        (call seutils.config.read_files
+            (
+                subj_type_attribute
+            )
+        )
+        (call seutils.default_context.read_files
+            (
+                subj_type_attribute
+            )
+        )
+
+        (call users.common_login_user.create_keyring
+            (
+                subj_type_attribute
+            )
+        )
+        (call users.common_login_user.signal
+            (
+                subj_type_attribute
+            )
+        )
+        (call users.common_login_user.signull
+            (
+                subj_type_attribute
+            )
+        )
+
+        (optional pam_login_program_optional_logind
+            (dontaudit subj_type_attribute self
+                (capability
+                    (
+                        dac_override
+                    )
+                )
+            )
+            (allow subj_type_attribute self
+                (capability
+                    (
+                        dac_read_search
+                    )
+                )
+            )
+
+            (call files.runtime_user.search
+	            (
+                    subj_type_attribute
+                )
+            )
+
+            (call fs.tmpfs.search
+                (
+                    subj_type_attribute
+                )
+            )
+
+            (call logind.client_subj_type
+                (
+                    subj_type_attribute
+                )
+            )
+        )
+
+        (optional pam_login_program_optional_systemd
+            (call systemd.user.signull
+                (
+                    subj_type_attribute
+                )
+            )
+            (call systemd.user.link_keyring
+                (
+                    subj_type_attribute
+                )
+            )
+        )
+    )
+
+    ;
+    ; PAM nologin name space
+    ;
+
+    (block nologin
+
+        ;
+        ; nologin contexts
+        ;
+
+        (filecon "/run/\.nologin.*" file runtime_file_context)
+        (filecon "/run/\..*nologin.*" file runtime_file_context)
+        (filecon "/run/nologin" file runtime_file_context)
+
+        ;
+        ; nologin macros
+        ;
+
+        (macro generic_runtime_obj_type_transition ((type ARG1))
+            (call files.generic_runtime.obj_type_transition
+                (
+                    ARG1 runtime_file file "*"
+                )
+            )
+        )
+
+        ;
+        ; nologin policy
+        ;
+
+        (blockinherit files.runtime_file.obj_template)
+    )
+
+    ;
+    ; PAM runtime name space
+    ;
+
+    (block runtime
+
+        ;
+        ; runtime contexts
+        ;
+
+        (filecon "/run/pam_timestamp(/.*)?" any runtime_file_context)
+        (filecon "/run/sepermit(/.*)?" any runtime_file_context)
+
+        ;
+        ; runtime macros
+        ;
+
+        (macro generic_runtime_obj_type_transition ((type ARG1))
+            (call files.generic_runtime.obj_type_transition
+                (
+                    ARG1 runtime_file dir "pam_timestamp"
+                )
+            )
+            (call files.generic_runtime.obj_type_transition
+                (
+                    ARG1 runtime_file dir "sepermit"
+                )
+            )
+        )
+
+        ;
+        ; runtime policy
+        ;
+
+        (blockinherit files.runtime_file.obj_template)
+
+        (call generic_runtime_obj_type_transition
+            (
+                subj
+            )
+        )
+        (call manage
+            (
+                subj
+            )
+        )
+    )
+)
