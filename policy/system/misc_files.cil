@@ -10,9 +10,9 @@
 ;       Misc crypto_state name space
 ;       Misc factory name space
 ;       Misc font name space
-;           Misc font cache name space
 ;           Misc font config name space
 ;           Misc font data name space
+;           Misc font var_cache name space
 ;       Misc fstab name space
 ;       Misc generic_cert name space
 ;       Misc hosts name space
@@ -4824,38 +4824,6 @@
         )
 
         ;
-        ; Misc font var_cache name space
-        ;
-
-        (block var_cache
-
-            ;
-            ; font.cache contexts
-            ;
-
-            (filecon "/var/cache/fontconfig(/.*)?" any
-                var_cache_file_context)
-
-            ;
-            ; font.var_cache policy
-            ;
-
-            (blockinherit files.var_cache_file.obj_template)
-
-            (call obj_type
-                (
-                    var_cache_file
-                )
-            )
-
-            (call manage
-                (
-                    client_subj_type_attribute
-                )
-            )
-        )
-
-        ;
         ; Misc font config name space
         ;
 
@@ -4915,6 +4883,38 @@
             )
 
             (call read
+                (
+                    client_subj_type_attribute
+                )
+            )
+        )
+
+        ;
+        ; Misc font var_cache name space
+        ;
+
+        (block var_cache
+
+            ;
+            ; font.cache contexts
+            ;
+
+            (filecon "/var/cache/fontconfig(/.*)?" any
+                var_cache_file_context)
+
+            ;
+            ; font.var_cache policy
+            ;
+
+            (blockinherit files.var_cache_file.obj_template)
+
+            (call obj_type
+                (
+                    var_cache_file
+                )
+            )
+
+            (call manage
                 (
                     client_subj_type_attribute
                 )
@@ -8382,6 +8382,14 @@
         ;
 
         (filecon "/var/log/wtmp.*" file var_log_file_context)
+
+        ;
+        ; wtmp macros
+        ;
+
+        (macro dontaudit_write_files ((type ARG1))
+            (dontaudit ARG1 var_log_file write_file_perms)
+        )
 
         ;
         ; wtmp policy

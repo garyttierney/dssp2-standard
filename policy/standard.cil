@@ -26,22 +26,6 @@
     )
 )
 
-(class passwd
-    (
-        chfn
-        chsh
-        crontab
-        passwd
-        rootok
-    )
-)
-
-(classorder
-    (unordered
-        passwd
-    )
-)
-
 (class service
     (
         disable
@@ -76,14 +60,6 @@
 
     (allow isid self
         (dbus
-            (
-                all
-            )
-        )
-    )
-
-    (allow isid self
-        (passwd
             (
                 all
             )
@@ -304,6 +280,39 @@
 
     (optional sys_optional_mount
         (call mount.runtime.generic_runtime_obj_type_transition
+            (
+                isid
+            )
+        )
+    )
+
+    (optional sys_optional_pam
+        (call pam.console.runtime.generic_runtime_obj_type_transition
+            (
+                isid
+            )
+        )
+        (call pam.faillog.runtime.generic_runtime_obj_type_transition
+            (
+                isid
+            )
+        )
+        (call pam.faillog.var_log.generic_var_log_obj_type_transition
+            (
+                isid
+            )
+        )
+        (call pam.lastlog.generic_var_log_obj_type_transition
+            (
+                isid
+            )
+        )
+        (call pam.runtime.generic_runtime_obj_type_transition
+            (
+                isid
+            )
+        )
+        (call pam.unconfined_subj_type
             (
                 isid
             )

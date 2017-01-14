@@ -261,6 +261,39 @@
         )
     )
 
+    (optional testuser_optional_pam
+        (call pam.console.runtime.generic_runtime_obj_type_transition
+            (
+                subj
+            )
+        )
+        (call pam.faillog.runtime.generic_runtime_obj_type_transition
+            (
+                subj
+            )
+        )
+        (call pam.faillog.var_log.generic_var_log_obj_type_transition
+            (
+                subj
+            )
+        )
+        (call pam.lastlog.generic_var_log_obj_type_transition
+            (
+                subj
+            )
+        )
+        (call pam.runtime.generic_runtime_obj_type_transition
+            (
+                subj
+            )
+        )
+        (call pam.unconfined_subj_type
+            (
+                subj
+            )
+        )
+    )
+
     (optional testuser_optional_seutils
         (call seutils.config.generic_config_obj_type_transition
             (
