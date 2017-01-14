@@ -54,7 +54,6 @@
     ; Contexts
     ;
 
-
     (filecon "/usr/sbin/pam_timestamp_check" file cmd_file_context)
 
     ;
