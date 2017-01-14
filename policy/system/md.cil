@@ -1,0 +1,140 @@
+; -*- mode: CIL; fill-column: 75; indent-tabs-mode: nil; tab-width: 4 -*-
+
+; MD policy
+;
+; 1. MD name space
+;       MD adm name space
+;           MD adm runtime name space
+;       MD mon name space
+
+;
+; MD name space
+;
+
+(block md
+
+    ;
+    ; Macros
+    ;
+
+    (macro subj_type ((type ARG1))
+        (typeattributeset subj_type_attribute ARG1)
+    )
+
+    ;
+    ; Policy
+    ;
+
+    (typeattribute subj_type_attribute)
+
+    (blockinherit subj.common_subj.subj_all_macro_template)
+
+    ;
+    ; MD adm name space
+    ;
+
+    (block adm
+
+        ;
+        ; adm contexts
+        ;
+
+        (filecon "/usr/sbin/mdadm" file cmd_file_context)
+        (filecon "/usr/sbin/raid-check" file cmd_file_context)
+
+        ;
+        ; adm policy
+        ;
+
+        (blockinherit hybrid_agent_template)
+
+        (call md.subj_type
+            (
+                subj
+            )
+        )
+
+        (optional md_adm_optional_systemd
+            (call systemd.system.daemon
+                (
+                    subj cmd_file
+                )
+            )
+        )
+
+        ;
+        ; MD adm runtime name space
+        ;
+
+        (block runtime
+
+            ;
+            ; adm runtime contexts
+            ;
+
+            (filecon "/run/mdadm(/.*)?" any runtime_file_context)
+
+            ;
+            ; adm runtime macros
+            ;
+
+            (macro generic_runtime_obj_type_transition ((type ARG1))
+                (call files.generic_runtime.obj_type_transition
+                    (
+                        ARG1 runtime_file dir "mdadm"
+                    )
+                )
+            )
+
+            ;
+            ; adm runtime policy
+            ;
+
+            (blockinherit files.runtime_file.obj_template)
+
+            (call generic_runtime_obj_type_transition
+                (
+                    subj
+                )
+            )
+            (call manage
+                (
+                    subj
+                )
+            )
+        )
+    )
+
+    ;
+    ; MD mon name space
+    ;
+
+    (block mon
+
+        ;
+        ; mon contexts
+        ;
+
+        (filecon "/usr/sbin/mdmon" file cmd_file_context)
+
+        ;
+        ; mon policy
+        ;
+
+        (blockinherit system_agent_template)
+
+        (call md.subj_type
+            (
+                subj
+            )
+        )
+
+        (optional md_mon_optional_systemd
+            (call systemd.system.daemon
+                (
+                    subj cmd_file
+                )
+            )
+        )
+    )
+)

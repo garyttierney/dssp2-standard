@@ -212,6 +212,14 @@
         )
     )
 
+    (optional testuser_optional_md
+        (call md.adm.runtime.generic_runtime_obj_type_transition
+            (
+                subj
+            )
+        )
+    )
+
     (optional testuser_optional_miscfiles
         (call misc.fstab.control_client_subj_type
             (
