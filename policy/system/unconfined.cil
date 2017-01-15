@@ -1,0 +1,451 @@
+; -*- mode: CIL; fill-column: 75; indent-tabs-mode: nil; tab-width: 4 -*-
+
+(block unconfined
+
+    ;
+    ; Macros
+    ;
+
+    (blockinherit subj.common_subj.subj_all_macro_template)
+
+    ;
+    ; Policy
+    ;
+
+    (typeattribute subj_type_attribute)
+
+    (call sys.unconfined_subj_type
+        (
+            subj_type_attribute
+        )
+    )
+    (call sys.var_log.generic_var_log_obj_type_transition
+        (
+            subj_type_attribute
+        )
+    )
+
+    (call dev.unconfined_subj_type
+        (
+            subj_type_attribute
+        )
+    )
+    (call dev.null.control_client_subj_type
+        (
+            subj_type_attribute
+        )
+    )
+
+    (call files.unconfined_subj_type
+        (
+            subj_type_attribute
+        )
+    )
+
+    (call fs.unconfined_subj_type
+        (
+            subj_type_attribute
+        )
+    )
+
+    (call lib.ld_so_cache.generic_config_obj_type_transition
+        (
+            subj_type_attribute
+        )
+    )
+
+    (call net.unconfined_subj_type
+        (
+            subj_type_attribute
+        )
+    )
+
+    (call sec.unconfined_subj_type
+        (
+            subj_type_attribute
+        )
+    )
+
+    (call subj.unconfined_subj_type
+        (
+            subj_type_attribute
+        )
+    )
+
+    (call term.unconfined_subj_type
+        (
+            subj_type_attribute
+        )
+    )
+
+    (optional unconfined_optional_stor
+        (call stor.unconfined_subj_type
+            (
+                subj_type_attribute
+            )
+        )
+    )
+
+    (optional unconfined_optional_fsutils
+        (call fsutils.boot_flag.rootfs_obj_type_transition
+            (
+                subj_type_attribute
+            )
+        )
+        (call fsutils.runtime.generic_runtime_obj_type_transition
+            (
+                subj_type_attribute
+            )
+        )
+    )
+
+    (optional unconfined_optional_hostname
+        (call hostname.config.generic_config_obj_type_transition
+            (
+                subj_type_attribute
+            )
+        )
+    )
+
+    (optional unconfined_optional_hwclock
+        (call hwclock.config.generic_config_obj_type_transition
+            (
+                subj_type_attribute
+            )
+        )
+    )
+
+    (optional unconfined_optional_iputils
+        (call iputils.runtime.generic_runtime_obj_type_transition
+            (
+                subj_type_attribute
+            )
+        )
+    )
+
+    (optional unconfined_optional_kmod
+        (call kmod.module_dep.generic_modules_obj_type_transition
+            (
+                subj_type_attribute
+            )
+        )
+    )
+
+    (optional unconfined_optional_ldconfig
+        (call ldconfig.var_cache.generic_var_cache_obj_type_transition
+            (
+                subj_type_attribute
+            )
+        )
+    )
+
+    (optional unconfined_optional_lvm
+        (call lvm.runtime.generic_runtime_obj_type_transition
+            (
+                subj_type_attribute
+            )
+        )
+        (call lvm.runtime_lock.generic_runtime_lock_obj_type_transition
+            (
+                subj_type_attribute
+            )
+        )
+    )
+
+    (optional unconfined_optional_md
+        (call md.adm.runtime.generic_runtime_obj_type_transition
+            (
+                subj_type_attribute
+            )
+        )
+    )
+
+    (optional unconfined_optional_miscfiles
+        (call misc.fstab.control_client_subj_type
+            (
+                subj_type_attribute
+            )
+        )
+        (call misc.fstab.generic_config_obj_type_transition
+            (
+                subj_type_attribute
+            )
+        )
+        (call misc.hosts.generic_config_obj_type_transition
+            (
+                subj_type_attribute
+            )
+        )
+        (call misc.shadow.manage_files
+            (
+                subj_type_attribute
+            )
+        )
+        (call misc.shadow.relabel_files
+            (
+                subj_type_attribute
+            )
+        )
+        (call misc.utmp.generic_runtime_obj_type_transition
+            (
+                subj_type_attribute
+            )
+        )
+    )
+
+    (optional unconfined_optional_mount
+        (call mount.runtime.generic_runtime_obj_type_transition
+            (
+                subj_type_attribute
+            )
+        )
+    )
+
+    (optional unconfined_optional_pam
+        (call pam.console.runtime.generic_runtime_obj_type_transition
+            (
+                subj_type_attribute
+            )
+        )
+        (call pam.faillog.runtime.generic_runtime_obj_type_transition
+            (
+                subj_type_attribute
+            )
+        )
+        (call pam.faillog.var_log.generic_var_log_obj_type_transition
+            (
+                subj_type_attribute
+            )
+        )
+        (call pam.lastlog.generic_var_log_obj_type_transition
+            (
+                subj_type_attribute
+            )
+        )
+        (call pam.runtime.generic_runtime_obj_type_transition
+            (
+                subj_type_attribute
+            )
+        )
+        (call pam.unconfined_subj_type
+            (
+                subj_type_attribute
+            )
+        )
+    )
+
+    (optional unconfined_optional_seutils
+        (call seutils.config.generic_config_obj_type_transition
+            (
+                subj_type_attribute
+            )
+        )
+        (call seutils.default_context.seutils_config_obj_type_transition
+            (
+                subj_type_attribute
+            )
+        )
+        (call seutils.file_context.seutils_default_context_obj_type_transition
+            (
+                subj_type_attribute
+            )
+        )
+        (call seutils.policy.config.manage
+            (
+                subj_type_attribute
+            )
+        )
+        (call seutils.policy.config.relabel
+            (
+                subj_type_attribute
+            )
+        )
+        (call seutils.policy.config.seutils_config_obj_type_transition
+            (
+                subj_type_attribute
+            )
+        )
+        (call seutils.policy.store.generic_var_lib_obj_type_transition
+            (
+                subj_type_attribute
+            )
+        )
+    )
+
+    (optional unconfined_optional_udev
+        (call udev.runtime.generic_runtime_obj_type_transition
+            (
+                subj_type_attribute
+            )
+        )
+    )
+
+    (optional unconfined_optional_users
+        (call users.home_dir.home_obj_type_transition
+            (
+                subj_type_attribute
+            )
+        )
+        (call users.mail_spool.generic_var_spool_obj_type_transition
+            (
+                subj_type_attribute
+            )
+        )
+
+        (call users.generic_home_cache.home_dir_obj_type_transition
+            (
+                subj_type_attribute
+            )
+        )
+
+        (call users.generic_home_config.home_dir_obj_type_transition
+            (
+                subj_type_attribute
+            )
+        )
+
+        (call users.generic_home_data.home_dir_obj_type_transition
+            (
+                subj_type_attribute
+            )
+        )
+
+        (call users.generic_home.home_dir_obj_type_transition
+            (
+                subj_type_attribute dir "*"
+            )
+        )
+        (call users.generic_home.home_dir_obj_type_transition
+            (
+                subj_type_attribute fifo_file "*"
+            )
+        )
+        (call users.generic_home.home_dir_obj_type_transition
+            (
+                subj_type_attribute file "*"
+            )
+        )
+        (call users.generic_home.home_dir_obj_type_transition
+            (
+                subj_type_attribute lnk_file "*"
+            )
+        )
+        (call users.generic_home.home_dir_obj_type_transition
+            (
+                subj_type_attribute sock_file "*"
+            )
+        )
+
+        (call users.generic_tmp.generic_var_tmp_obj_type_transition
+            (
+                subj_type_attribute dir "*"
+            )
+        )
+        (call users.generic_tmp.generic_var_tmp_obj_type_transition
+            (
+                subj_type_attribute fifo_file "*"
+            )
+        )
+        (call users.generic_tmp.generic_var_tmp_obj_type_transition
+            (
+                subj_type_attribute file "*"
+            )
+        )
+        (call users.generic_tmp.generic_var_tmp_obj_type_transition
+            (
+                subj_type_attribute lnk_file "*"
+            )
+        )
+        (call users.generic_tmp.generic_var_tmp_obj_type_transition
+            (
+                subj_type_attribute sock_file "*"
+            )
+        )
+
+        (call users.generic_tmpfs.tmpfs_obj_type_transition
+            (
+                subj_type_attribute dir "*"
+            )
+        )
+        (call users.generic_tmpfs.tmpfs_obj_type_transition
+            (
+                subj_type_attribute fifo_file "*"
+            )
+        )
+        (call users.generic_tmpfs.tmpfs_obj_type_transition
+            (
+                subj_type_attribute file "*"
+            )
+        )
+        (call users.generic_tmpfs.tmpfs_obj_type_transition
+            (
+                subj_type_attribute lnk_file "*"
+            )
+        )
+        (call users.generic_tmpfs.tmpfs_obj_type_transition
+            (
+                subj_type_attribute sock_file "*"
+            )
+        )
+
+        (call users.home_cert.home_dir_obj_type_transition
+            (
+                subj_type_attribute
+            )
+        )
+
+        (call users.home_commands.generic_home_data_obj_type_transition
+            (
+                subj_type_attribute
+            )
+        )
+
+        (call users.home_font.cache.generic_home_cache_obj_type_transition
+            (
+                subj_type_attribute
+            )
+        )
+
+        (call users.home_font.cache.home_dir_obj_type_transition
+            (
+                subj_type_attribute
+            )
+        )
+
+        (call users.home_font.config.generic_home_config_obj_type_transition
+            (
+                subj_type_attribute
+            )
+        )
+
+        (call users.home_font.config.home_dir_obj_type_transition
+            (
+                subj_type_attribute
+            )
+        )
+
+        (call users.home_font.data.generic_home_data_obj_type_transition
+            (
+                subj_type_attribute
+            )
+        )
+
+        (call users.home_font.data.home_dir_obj_type_transition
+            (
+                subj_type_attribute
+            )
+        )
+
+        (call users.home_history.home_dir_obj_type_transition
+            (
+                subj_type_attribute
+            )
+        )
+
+        (call users.home_shellrc.home_dir_obj_type_transition
+            (
+                subj_type_attribute
+            )
+        )
+    )
+)
