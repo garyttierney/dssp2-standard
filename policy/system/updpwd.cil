@@ -1,0 +1,16 @@
+; -*- mode: CIL; fill-column: 75; indent-tabs-mode: nil; tab-width: 4 -*-
+
+(block updpwd
+
+    ;
+    ; Contexts
+    ;
+
+    (filecon "/usr/sbin/unix_update" file cmd_file_context)
+
+    ;
+    ; Policy
+    ;
+
+    (blockinherit hybrid_agent_template)
+)

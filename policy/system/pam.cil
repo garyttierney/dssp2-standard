@@ -215,11 +215,11 @@
     ;;    )
     ;;)
 
-    ;;(call updpwd.auto_subj_type_transition
-    ;;    (
-    ;;        client_subj_type_attribute
-    ;;    )
-    ;;)
+    (call updpwd.auto_subj_type_transition
+        (
+            client_subj_type_attribute
+        )
+    )
 
     (optional pam_client_optional_journald
         (call journald.client_subj_type
