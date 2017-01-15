@@ -26,14 +26,6 @@
     )
 
     (allow subj self
-        (dbus
-            (
-                all
-            )
-        )
-    )
-
-    (allow subj self
         (service
             (
                 all

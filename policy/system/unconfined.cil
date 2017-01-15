@@ -86,6 +86,14 @@
         )
     )
 
+    (optional unconfined_optional_dbus
+        (call dbus.unconfined_subj_type
+            (
+                subj_type_attribute
+            )
+        )
+    )
+
     (optional unconfined_optional_fsutils
         (call fsutils.boot_flag.rootfs_obj_type_transition
             (

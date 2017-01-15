@@ -1,0 +1,1022 @@
+; -*- mode: CIL; fill-column: 75; indent-tabs-mode: nil; tab-width: 4 -*-
+
+; dbus policy
+;
+; 1. dbus access vector declarations
+; 2. dbus name space
+;       dbus config name space
+;       dbus helper name space
+;       dbus runtime name space
+;       dbus system name space
+;       dbus user name space
+;           dbus user tmpfs name space
+;       dbus var_lib name space
+
+;
+; dbus access vector declarations
+;
+
+(class dbus
+    (
+        acquire_svc
+        send_msg
+    )
+)
+
+(classorder
+    (unordered
+        dbus
+    )
+)
+
+;
+; dbus name space
+;
+
+(block dbus
+
+    ;
+    ; Constraints
+    ;
+
+    (constrain
+        (dbus
+            (
+                acquire_svc
+                send_msg
+            )
+        )
+        (or
+            (or
+                (or
+                    (eq r1 r2)
+                    (eq r1 rbacsep_exemption_role_attribute)
+                )
+                (eq r2 rbacsep_exemption_role_attribute)
+            )
+            (eq t1 rbacsep_exemption_subj_type_attribute)
+        )
+    )
+
+    ;
+    ; Contexts
+    ;
+
+    (filecon "/usr/bin/dbus-daemon" file cmd_file_context)
+
+    ;
+    ; Macros
+    ;
+
+    (macro subj_type ((type ARG1))
+        (typeattributeset subj_type_attribute ARG1)
+    )
+
+    (macro unconfined_subj_type ((type ARG1))
+        (typeattributeset unconfined_subj_type_attribute ARG1)
+    )
+
+    ;
+    ; Policy
+    ;
+
+    (blockinherit cmd.cmd_file.obj_template)
+
+    (typeattribute subj_type_attribute)
+    (typeattribute unconfined_subj_type_attribute)
+
+    (allow subj_type_attribute self
+        (process
+            (
+                getcap
+            )
+        )
+    )
+    (allow subj_type_attribute self create_netlink_selinux_socket_perms)
+    (allow subj_type_attribute self
+        (unix_stream_socket
+            (
+                accept
+                listen
+            )
+        )
+    )
+
+    (call entry
+        (
+            subj_type_attribute
+        )
+    )
+
+    (call sys.kernel_sysctl.read_files
+        (
+            subj_type_attribute
+        )
+    )
+
+    (call dev.urandom.read_chr_files
+        (
+            subj_type_attribute
+        )
+    )
+
+    (call files.generic_data.read
+        (
+            subj_type_attribute
+        )
+    )
+
+    (call sec.compute_access_vector
+        (
+            subj_type_attribute
+        )
+    )
+
+    ;;(call nss.client_subj_type
+    ;;    (
+    ;;        subj_type_attribute
+    ;;    )
+    ;;)
+
+    (call seutils.config.read_files
+        (
+            subj_type_attribute
+        )
+    )
+    (call seutils.default_context.read_files
+        (
+            subj_type_attribute
+        )
+    )
+
+    (optional dbus_optional_journald
+        (call journald.client_subj_type
+            (
+                subj_type_attribute
+            )
+        )
+    )
+
+    (optional dbus_optional_logind
+        (call logind.runtime.read
+            (
+                subj_type_attribute
+            )
+        )
+    )
+
+    (allow unconfined_subj_type_attribute self
+        (dbus
+            (
+                acquire_svc
+            )
+        )
+    )
+
+    (allow unconfined_subj_type_attribute unconfined_subj_type_attribute
+        (dbus
+            (
+                send_msg
+            )
+        )
+    )
+
+    (call runtime.generic_runtime_obj_type_transition
+        (
+            unconfined_subj_type_attribute
+        )
+    )
+
+    (call system.service_subj_type
+        (
+            unconfined_subj_type_attribute
+        )
+    )
+
+    (call var_lib.generic_var_lib_obj_type_transition
+        (
+            unconfined_subj_type_attribute
+        )
+    )
+
+    ;
+    ; dbus config name space
+    ;
+
+    (block config
+
+        ;
+        ; config contexts
+        ;
+
+        (filecon "/etc/dbus-1(/.*)?" any config_file_context)
+
+        ;
+        ; config policy
+        ;
+
+        (blockinherit files.config_file.obj_template)
+
+        (call read
+            (
+                subj_type_attribute
+            )
+        )
+    )
+
+    ;
+    ; dbus helper name space
+    ;
+
+    (block helper
+
+        ;
+        ; helper contexts
+        ;
+
+        (filecon "/usr/libexec/dbus-1/dbus-daemon-launch-helper"
+            file cmd_file_context)
+
+        ;
+        ; helper policy
+        ;
+
+        (blockinherit cmd.cmd_file.obj_template)
+    )
+
+    ;
+    ; dbus runtime name space
+    ;
+
+    (block runtime
+
+        ;
+        ; runtime contexts
+        ;
+
+        (filecon "/run/dbus(/.*)?" any runtime_file_context)
+
+        ;
+        ; runtime macros
+        ;
+
+        (macro generic_runtime_obj_type_transition ((type ARG1))
+            (call files.generic_runtime.obj_type_transition
+                (
+                    ARG1 runtime_file dir "dbus"
+                )
+            )
+        )
+
+        ;
+        ; runtime policy
+        ;
+
+        (blockinherit files.runtime_file.obj_template)
+
+        (call generic_runtime_obj_type_transition
+            (
+                system.subj
+            )
+        )
+        (call manage
+            (
+                system.subj
+            )
+        )
+
+        (optional dbus_optional_systemd
+            (call systemd.system.socket_activated.obj_type
+                (
+                    runtime_file
+                )
+            )
+        )
+    )
+
+    ;
+    ; dbus system name space
+    ;
+
+    (block system
+
+        ;
+        ; system macros
+        ;
+
+        (macro auto_subj_type_transition ((type ARG1))
+            (call dontaudit_noatsecure
+                (
+                    ARG1
+                )
+            )
+            (call dontaudit_siginh
+                (
+                    ARG1
+                )
+            )
+            (call dontaudit_rlimitinh
+                (
+                    ARG1
+                )
+            )
+            (call transition
+                (
+                    ARG1
+                )
+            )
+            (call cmd_file_auto_subj_type_transition
+                (
+                    ARG1 subj
+                )
+            )
+            (allow subj ARG1
+                (process
+                    (
+                        sigchld
+                        signal
+                        signull
+                    )
+                )
+            )
+            (allow subj ARG1
+                (fd
+                    (
+                        use
+                    )
+                )
+            )
+            (allow subj ARG1 rw_inherited_fifo_file_perms)
+        )
+
+        (macro client_subj_type ((type ARG1))
+            (typeattributeset client_subj_type_attribute ARG1)
+        )
+
+        (macro daemon ((type ARG1)(type ARG2))
+            (typetransition subj ARG2 process ARG1)
+            (call daemon_entry_obj_type
+                (
+                    ARG2
+                )
+            )
+            (call daemon_subj_type
+                (
+                    ARG1
+                )
+            )
+        )
+
+        (macro daemon_entry_obj_type ((type ARG1))
+            (typeattributeset daemon_entry_obj_type_attribute ARG1)
+        )
+
+        (macro daemon_subj_type ((type ARG1))
+            (typeattributeset daemon_subj_type_attribute ARG1)
+        )
+
+        (macro service_subj_type ((type ARG1))
+            (typeattributeset service_subj_type_attribute ARG1)
+        )
+
+        (macro stream_connect ((type ARG1))
+            (call runtime.write_sock_files
+                (
+                    ARG1
+                )
+            )
+            (call unix_stream_socket_connectto
+                (
+                    ARG1
+                )
+            )
+        )
+
+        ;
+        ; system policy
+        ;
+
+        (typeattribute client_subj_type_attribute)
+        (typeattribute daemon_entry_obj_type_attribute)
+        (typeattribute daemon_subj_type_attribute)
+        (typeattribute service_subj_type_attribute)
+
+        (blockinherit subj.common_subj.subj_template)
+
+        (roletype sys.role subj)
+
+        (allow subj self
+            (process
+                (
+                    setcap
+                    setrlimit
+                )
+            )
+        )
+        (allow subj self
+            (capability
+                (
+                    setgid
+                    setuid
+                    sys_resource
+                )
+            )
+        )
+
+        (allow subj client_subj_type_attribute
+            (dbus
+                (
+                    send_msg
+                )
+            )
+        )
+
+        (allow subj client_subj_type_attribute
+            (process_state
+                (
+                    read
+                )
+            )
+        )
+
+        (allow subj daemon_entry_obj_type_attribute mmap_file_perms)
+
+        (dontaudit subj daemon_subj_type_attribute
+            (process
+                (
+                    noatsecure
+                    rlimitinh
+                    siginh
+                )
+            )
+        )
+
+        (allow subj daemon_subj_type_attribute
+            (process
+                (
+                    transition
+                )
+            )
+        )
+
+        (call subj_type
+            (
+                subj
+            )
+        )
+
+        (call helper.execute
+            (
+                subj
+            )
+        )
+
+        (call sys.audit_client
+            (
+                subj
+            )
+        )
+
+        (call dev.dri.rw_inherited_chr_files
+            (
+                subj
+            )
+        )
+        (call dev.event.rw_inherited_chr_files
+            (
+                subj
+            )
+        )
+        (call dev.ptmx.rw_inherited_chr_files
+            (
+                subj
+            )
+        )
+
+        (call pam.console.runtime.read_files
+            (
+                subj
+            )
+        )
+
+        (optional dbus_optional_logind
+            (call logind.runtime.write_inherited_fifo_files
+                (
+                    subj
+                )
+            )
+        )
+
+        (optional dbus_optional_machined
+            (call machined.pty.rw_inherited_chr_files
+                (
+                    subj
+                )
+            )
+            (call machined.use_fd
+                (
+                    subj
+                )
+            )
+            (call machined.var_lib.write_inherited_files
+                (
+                    subj
+                )
+            )
+        )
+
+        (optional dbus_optional_systemd
+            (call systemd.system.daemon
+                (
+                    subj cmd_file
+                )
+            )
+            (call systemd.system.unix_stream_socket_activated.subj_type
+                (
+                    subj
+                )
+            )
+        )
+
+        (optional dbus_optional_users
+            (call users.generic_home.write_inherited_files
+                (
+                    subj
+                )
+            )
+        )
+
+        ;
+        ; dbus system client policy
+        ;
+
+        (allow client_subj_type_attribute self
+            (dbus
+                (
+                    send_msg
+                )
+            )
+        )
+        (allow client_subj_type_attribute subj
+            (dbus
+                (
+                    send_msg
+                )
+            )
+        )
+
+        (call config.read_files
+            (
+                client_subj_type_attribute
+            )
+        )
+
+        (call stream_connect
+            (
+                client_subj_type_attribute
+            )
+        )
+
+        (call var_lib.read_files
+            (
+                client_subj_type_attribute
+            )
+        )
+
+        ;
+        ; dbus system daemon policy
+        ;
+
+        (allow daemon_subj_type_attribute subj
+            (process
+                (
+                    sigchld
+                    signal
+                    signull
+                )
+            )
+        )
+
+        (allow daemon_subj_type_attribute subj
+            rw_inherited_unix_stream_socket_perms)
+
+        (call service_subj_type
+            (
+                daemon_subj_type_attribute
+            )
+        )
+
+        ;
+        ; dbus system service policy
+        ;
+
+        (allow service_subj_type_attribute subj
+            (dbus
+                (
+                    acquire_svc
+                )
+            )
+        )
+
+        (call client_subj_type
+            (
+                service_subj_type_attribute
+            )
+        )
+    )
+
+    ;
+    ; dbus user name space
+    ;
+
+    (block user
+
+        ;
+        ; dbus user macros
+        ;
+
+        (blockinherit subj.common_subj.subj_all_macro_template)
+
+        ;
+        ; dbus user policy
+        ;
+
+        (typeattribute subj_type_attribute)
+
+        (call dbus.subj_type
+            (
+                subj_type_attribute
+            )
+        )
+
+        (optional dbus_optional_users
+            (call users.terminals.rw_inherited_chr_files
+                (
+                    subj_type_attribute
+                )
+            )
+        )
+
+        ;
+        ; dbus user templates
+        ;
+
+        (block subj_template
+
+            ;
+            ; dbus.user.subj_template macros
+            ;
+
+            (macro auto_subj_type_transition ((type ARG1))
+                (call dontaudit_noatsecure
+                    (
+                        ARG1
+                    )
+                )
+                (call dontaudit_siginh
+                    (
+                        ARG1
+                    )
+                )
+                (call dontaudit_rlimitinh
+                    (
+                        ARG1
+                    )
+                )
+                (call transition
+                    (
+                        ARG1
+                    )
+                )
+                (call dbus.cmd_file_auto_subj_type_transition
+                    (
+                        ARG1 subj
+                    )
+                )
+                (allow subj ARG1
+                    (process
+                        (
+                            sigchld
+                            signal
+                            signull
+                        )
+                    )
+                )
+                (allow subj ARG1
+                    (fd
+                        (
+                            use
+                        )
+                    )
+                )
+                (allow subj ARG1 rw_inherited_fifo_file_perms)
+            )
+
+            (macro client_subj_type ((type ARG1))
+                (typeattributeset client_subj_type_attribute ARG1)
+            )
+
+            (macro daemon ((type ARG1)(type ARG2))
+                (typetransition subj ARG2 process ARG1)
+                (call daemon_entry_obj_type
+                    (
+                        ARG2
+                    )
+                )
+                (call daemon_subj_type
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro daemon_entry_obj_type ((type ARG1))
+                (typeattributeset daemon_entry_obj_type_attribute ARG1)
+            )
+
+            (macro daemon_subj_type ((type ARG1))
+                (typeattributeset daemon_subj_type_attribute ARG1)
+            )
+
+            (macro run ((type ARG1)(role ARG2))
+                (call auto_subj_type_transition
+                    (
+                        ARG1
+                    )
+                )
+
+                (roleattributeset role_attribute ARG2)
+
+                (call ps
+                    (
+                        ARG1
+                    )
+                )
+                (call ptrace
+                    (
+                        ARG1
+                    )
+                )
+                (call sigkill
+                    (
+                        ARG1
+                    )
+                )
+                (call signull
+                    (
+                        ARG1
+                    )
+                )
+                (call sigstop
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            (macro service_subj_type ((type ARG1))
+                (typeattributeset service_subj_type_attribute ARG1)
+            )
+
+            (macro stream_connect ((type ARG1))
+                (call dbus.user.tmpfs.write_sock_files
+                    (
+                        ARG1
+                    )
+                )
+                (call unix_stream_socket_connectto
+                    (
+                        ARG1
+                    )
+                )
+            )
+
+            ;
+            ; dbus.user.subj_template policy
+            ;
+
+            (blockabstract subj_template)
+
+            (typeattribute client_subj_type_attribute)
+            (typeattribute daemon_entry_obj_type_attribut)
+            (typeattribute daemon_subj_type_attribute)
+            (typeattribute service_subj_type_attribute)
+
+            (blockinherit subj.common_subj.subj_template)
+
+            (roleattribute role_attribute)
+
+            (roletype role_attribute subj)
+
+            (call subj_type
+                (
+                    subj
+                )
+            )
+
+            (allow subj client_subj_type_attribute
+               (dbus
+                    (
+                        send_msg
+                    )
+                )
+            )
+
+            (allow subj client_subj_type_attribute
+                (process_state
+                    (
+                        read
+                    )
+                )
+            )
+
+            (allow subj daemon_entry_obj_type_attribute mmap_file_perms)
+
+            (dontaudit subj daemon_subj_type_attribute
+                (process
+                    (
+                        noatsecure
+                        rlimitinh
+                        siginh
+                    )
+                )
+            )
+
+            (allow subj daemon_subj_type_attribute
+                (process
+                    (
+                        transition
+                    )
+                )
+            )
+
+            ;
+            ; dbus user client policy
+            ;
+
+            (allow client_subj_type_attribute self
+                (dbus
+                    (
+                        send_msg
+                    )
+                )
+            )
+            (allow client_subj_type_attribute subj
+                (dbus
+                    (
+                        send_msg
+                    )
+                )
+            )
+
+            (call config.read_files
+                (
+                    client_subj_type_attribute
+                )
+            )
+
+            (call stream_connect
+                (
+                    client_subj_type_attribute
+                )
+            )
+
+            (call var_lib.read_files
+                (
+                    client_subj_type_attribute
+                )
+            )
+
+            ;
+            ; dbus user daemon policy
+            ;
+
+            (allow daemon_subj_type_attribute subj
+                (process
+                    (
+                        sigchld
+                        signal
+                        signull
+                    )
+                )
+            )
+
+            (allow daemon_subj_type_attribute subj
+                rw_inherited_unix_stream_socket_perms)
+
+            (call service_subj_type
+                (
+                    daemon_subj_type_attribute
+                )
+            )
+
+            ;
+            ; dbus user service policy
+            ;
+
+            (allow service_subj_type_attribute subj
+                (dbus
+                    (
+                        acquire_svc
+                    )
+                )
+            )
+
+            (call client_subj_type
+                (
+                    service_subj_type_attribute
+                )
+            )
+        )
+
+        ;
+        ; dbus user tmpfs name space
+        ;
+
+        (block tmpfs
+
+            ;
+            ; dbus user tmpfs contexts
+            ;
+
+            (filecon "/run/user/%{USERID}/bus" socket
+                user_tmpfs_file_context)
+
+            ;
+            ; dbus user tmpfs macros
+            ;
+
+            (macro tmpfs_obj_type_transition ((type ARG1))
+                (call files.runtime_user.search
+                    (
+                        ARG1
+                    )
+                )
+                (call fs.tmpfs.obj_type_transition
+                    (
+                        ARG1 user_tmpfs_file sock_file "bus"
+                    )
+                )
+            )
+
+            ;
+            ; dbus user tmpfs policy
+            ;
+
+            (blockinherit users.user_tmpfs_file.obj_template)
+
+            (call tmpfs_obj_type_transition
+                (
+                    subj_type_attribute
+                )
+            )
+            (call manage
+                (
+                    subj_type_attribute
+                )
+            )
+        )
+    )
+
+    ;
+    ; dbus var_lib name space
+    ;
+
+    (block var_lib
+
+        ;
+        ; var_lib contexts
+        ;
+
+        (filecon "/var/lib/dbus(/.*)?" any var_lib_file_context)
+
+        ;
+        ; var_lib macros
+        ;
+
+        (macro generic_var_lib_obj_type_transition ((type ARG1))
+            (call files.generic_var_lib.obj_type_transition
+                (
+                    ARG1 var_lib_file dir "dbus"
+                )
+            )
+        )
+
+        ;
+        ; var_lib policy
+        ;
+
+        (blockinherit files.var_lib_file.obj_template)
+
+        (call generic_var_lib_obj_type_transition
+            (
+                system.subj
+            )
+        )
+        (call manage
+            (
+                system.subj
+            )
+        )
+    )
+)

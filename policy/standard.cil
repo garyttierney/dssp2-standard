@@ -13,19 +13,6 @@
     )
 )
 
-(class dbus
-    (
-        acquire_svc
-        send_msg
-    )
-)
-
-(classorder
-    (unordered
-        dbus
-    )
-)
-
 (class service
     (
         disable
@@ -52,14 +39,6 @@
 (in sys
     (allow isid self
         (context
-            (
-                all
-            )
-        )
-    )
-
-    (allow isid self
-        (dbus
             (
                 all
             )
