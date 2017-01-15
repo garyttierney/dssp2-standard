@@ -798,7 +798,7 @@
             (blockabstract subj_template)
 
             (typeattribute client_subj_type_attribute)
-            (typeattribute daemon_entry_obj_type_attribut)
+            (typeattribute daemon_entry_obj_type_attribute)
             (typeattribute daemon_subj_type_attribute)
             (typeattribute service_subj_type_attribute)
 
