@@ -357,6 +357,14 @@
         )
     )
 
+    (optional sys_optional_udev
+        (call udev.runtime.generic_runtime_obj_type_transition
+            (
+                isid
+            )
+        )
+    )
+
     (optional sys_optional_users
         (call users.home_dir.home_obj_type_transition
             (

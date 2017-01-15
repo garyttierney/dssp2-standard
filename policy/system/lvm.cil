@@ -181,11 +181,11 @@
         )
     )
 
-    ;;(call udev.client_subj_type
-    ;;    (
-    ;;        subj
-    ;;    )
-    ;;)
+    (call udev.client_subj_type
+        (
+            subj
+        )
+    )
 
     (optional lvm_optional_dbus
         (call dbus.system.client_subj_type
@@ -202,7 +202,7 @@
             )
         )
 
-        (call systemd.system.log_parse_env_subj_type
+        (call systemd.system.log_parse_env.subj_type
             (
                 subj
             )
@@ -322,7 +322,7 @@
         )
 
         (optional lvm_runtime_optional_systemd
-            (call systemd.system.socket_activated_obj_type
+            (call systemd.system.socket_activated.obj_type
                 (
                     runtime_file
                 )

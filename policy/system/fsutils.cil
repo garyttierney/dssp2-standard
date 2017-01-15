@@ -243,11 +243,11 @@
         )
     )
 
-    ;;(call udev.client_subj_type
-    ;;    (
-    ;;        subj
-    ;;    )
-    ;;)
+    (call udev.client_subj_type
+        (
+            subj
+        )
+    )
 
     (optional fsutils_optional_machined
         (call machined.var_lib.rw_files

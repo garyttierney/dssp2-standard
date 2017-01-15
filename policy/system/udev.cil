@@ -1,0 +1,128 @@
+; -*- mode: CIL; fill-column: 75; indent-tabs-mode: nil; tab-width: 4 -*-
+
+; udev policy
+;
+; 1. udev name space
+;       udev config name space
+;       udev helper name space
+;       udev runtime name space
+
+;
+; udev name space
+;
+
+(block udev
+
+    ;
+    ; Macros
+    ;
+
+    (macro client_subj_type ((type ARG1))
+        (typeattributeset client_subj_type_attribute ARG1)
+    )
+
+    ;
+    ; Policy
+    ;
+
+    (typeattribute client_subj_type_attribute)
+
+    ;
+    ; udev client policy
+    ;
+
+    (allow client_subj_type_attribute self
+        create_netlink_kobject_uevent_socket_perms)
+
+    ;
+    ; udev config name space
+    ;
+
+    (block config
+
+        ;
+        ; config contexts
+        ;
+
+        (filecon "/etc/udev(/.*)?" any config_file_context)
+
+        ;
+        ; config policy
+        ;
+
+        (blockinherit files.config_file.obj_template)
+
+        (call read
+            (
+                client_subj_type_attribute
+            )
+        )
+    )
+
+    ;
+    ; udev helper name space
+    ;
+
+    (block helper
+
+        ;
+        ; helper contexts
+        ;
+
+        (filecon "/usr/lib/udev/[^/]*" file cmd_file_context)
+        (filecon "/usr/sbin/biosdevname" file cmd_file_context)
+        (filecon "/usr/sbin/crda" file cmd_file_context)
+        (filecon "/usr/sbin/setregdomain" file cmd_file_context)
+
+        ;
+        ; helper policy
+        ;
+
+        (blockinherit cmd.cmd_file.obj_template)
+    )
+
+    ;
+    ; udev runtime name space
+    ;
+
+    (block runtime
+
+        ;
+        ; runtime contexts
+        ;
+
+        (filecon "/run/udev(/.*)?" any runtime_file_context)
+
+        ;
+        ; runtime macros
+        ;
+
+        (macro generic_runtime_obj_type_transition ((type ARG1))
+            (call files.generic_runtime.obj_type_transition
+                (
+                    ARG1 runtime_file dir "udev"
+                )
+            )
+        )
+
+        ;
+        ; runtime policy
+        ;
+
+        (blockinherit files.runtime_file.obj_template)
+
+        (call read
+            (
+                client_subj_type_attribute
+            )
+        )
+
+        (optional udev_optional_systemd
+            (call systemd.system.socket_activated.obj_type
+                (
+                    runtime_file
+                )
+            )
+        )
+    )
+)

@@ -66,6 +66,7 @@ STANDARD_POLICY_SOURCES = policy/standard.cil \
 	policy/system/pam.cil \
 	policy/system/seutils.cil \
 	policy/system/sysctl.cil \
+	policy/system/udev.cil \
 	policy/system/users.cil \
 	policy/testuser.cil
 
