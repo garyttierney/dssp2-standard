@@ -34,14 +34,6 @@
     )
 
     (allow subj self
-        (passwd
-            (
-                all
-            )
-        )
-    )
-
-    (allow subj self
         (service
             (
                 all
