@@ -1,0 +1,80 @@
+; -*- mode: CIL; fill-column: 75; indent-tabs-mode: nil; tab-width: 4 -*-
+
+; sysctl policy
+;
+; 1. sysctl name space
+;       sysctl config name space
+
+;
+; sysctl name space
+;
+
+(block sysctl
+
+    ;
+    ; Contexts
+    ;
+
+    (filecon "/usr/sbin/sysctl" file cmd_file_context)
+
+    ;
+    ; Policy
+    ;
+
+    (blockinherit user_agent_template)
+
+    (call sys.cpu_online_sysfs.read_files
+        (
+            subj
+        )
+    )
+    (call sys.sysctl_file.list
+        (
+            subj
+        )
+    )
+    (call sys.sysctl_file.rw_files
+        (
+            subj
+        )
+    )
+
+    (call fs.binfmt_misc.read
+        (
+            subj
+        )
+    )
+
+    (call subj.sys_ptrace_subj_type
+        (
+            subj
+        )
+    )
+
+    ;
+    ; sysctl config name space
+    ;
+
+    (block config
+
+        ;
+        ; config contexts
+        ;
+
+        (filecon "/etc/sysctl\.conf" file config_file_context)
+        (filecon "/etc/sysctl\.conf\..*" file config_file_context)
+        (filecon "/etc/sysctl\.d(/.*)?" any config_file_context)
+
+        ;
+        ; config policy
+        ;
+
+        (blockinherit files.config_file.obj_template)
+
+        (call read
+            (
+                subj
+            )
+        )
+    )
+)
