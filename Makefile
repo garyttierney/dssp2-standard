@@ -76,7 +76,7 @@ STANDARD_POLICY_SOURCES = policy/standard.cil \
 all: clean policy.$(POLICY_VERSION)
 
 clean:
-	$(RM) policy.$(POLICY_VERSION) file_contexts
+	$(RM) -f policy.$(POLICY_VERSION) file_contexts
 
 $(POLICY_VERSION): $(BASE_POLICY_SOURCES) $(STANDARD_POLICY_SOURCES)
 	$(SECILC) --policyvers=$(POLICY_VERSION) --o="$@" $^
